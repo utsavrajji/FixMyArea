@@ -64,7 +64,7 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-
+ 
     setLoading(true);
     try {
       const { user } = await createUserWithEmailAndPassword(auth, form.email, form.password);
