@@ -6,7 +6,6 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   
-  // ✅ Ensure Firebase is bundled
   optimizeDeps: {
     include: [
       'firebase/app',
@@ -16,12 +15,13 @@ export default defineConfig({
     ],
   },
   
-  // ✅ Do not mark Firebase as external
   build: {
+    outDir: 'dist', // ✅ Vercel expects build output here
     rollupOptions: {},
   },
 
-  // ✅ Optional (fixes Mac build)
+  base: '/', // ✅ Ensures proper routing on Vercel
+
   experimental: {
     useRollup: true,
   },
