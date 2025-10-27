@@ -12,6 +12,8 @@ function Navbar() {
       {/* Desktop links */}
       <div className="hidden md:flex items-center gap-8 text-gray-700">
         <Link to="/" className="hover:text-orange-500 transition">Home</Link>
+        <Link to="/history" className="hover:text-orange-500 transition">Resolved Issues</Link>
+
         <a href="#howitworks" className="hover:text-orange-500 transition">How It Works</a>
         <a href="#contact" className="hover:text-orange-500 transition">Contact</a>
         <button onClick={() => navigate("/login")} className="px-5 py-2 bg-orange-600 rounded text-white hover:bg-orange-700 transition">Login</button>
