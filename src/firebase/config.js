@@ -1,9 +1,10 @@
+// src/firebaseConfig.js
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
-// DEBUG: Print all loaded env variables to console
+// DEBUG: Check env variables (visible in console during build)
 console.log("ENV:", import.meta.env);
 
 const firebaseConfig = {
