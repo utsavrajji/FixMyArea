@@ -7,7 +7,7 @@ const CAROUSEL_IMAGES = [
   "https://www.myscheme.gov.in/_next/image?url=https%3A%2F%2Fcdn.myscheme.in%2Fimages%2Fslideshow%2Fbanner2.webp&w=3840&q=75",
 ];
 
-const SLIDE_CHANGE_INTERVAL_MS = 7000;
+const SLIDE_CHANGE_INTERVAL_MS = 3000;
 
 function HeroSection() {
   const navigate = useNavigate();
@@ -24,22 +24,22 @@ function HeroSection() {
   }, []);
 
   return (
-    <section className="relative isolate flex w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-[#eefcf5] via-[#f6fff9] to-white px-4 text-center min-h-[100dvh] sm:px-6 sm:min-h-[85vh] lg:px-8 lg:py-16">
+    <section className="relative isolate flex w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-[#eefcf5] via-[#f6fff9] to-white px-4 text-center min-h-[50dvh] sm:px-6 sm:min-h-[85vh] lg:px-8 lg:py-16">
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        {CAROUSEL_IMAGES.map((image, index) => (
-          <div
-            key={image}
-            className={`absolute inset-0 transition-opacity duration-[1200ms] ease-out ${
-              index === activeSlide ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            <img
-              src={image}
-              alt="Local community improvements"
-              className="h-full w-full object-cover object-center sm:object-[50%_45%] md:object-center"
-            />
-          </div>
-        ))}
+        <div
+          className="flex h-full w-full transition-transform duration-[1200ms] ease-out"
+          style={{ transform: `translateX(-${activeSlide * 100}%)` }}
+        >
+          {CAROUSEL_IMAGES.map((image, index) => (
+            <div key={image} className="flex-shrink-0 w-full h-full">
+              <img
+                src={image}
+                alt="Local community improvements"
+                className="h-full w-full object-contain object-center sm:object-cover sm:object-center md:object-[50%_45%] lg:object-center"
+              />
+            </div>
+          ))}
+        </div>
         <div className="absolute inset-0 bg-gradient-to-b from-white/65 via-white/30 to-white/40 sm:from-white/45 sm:via-white/15 sm:to-white/25" />
       </div>
 
@@ -82,24 +82,8 @@ function HeroSection() {
         </div>
       </div>
 
-      <div className="absolute bottom-4 left-1/2 z-20 flex w-full -translate-x-1/2 justify-center px-6 sm:bottom-8">
-        <div className="inline-flex items-center gap-1.5 rounded-full bg-white/85 px-3 py-2 shadow-soft-hero backdrop-blur-md sm:gap-2 sm:px-4">
-          {CAROUSEL_IMAGES.map((_, index) => (
-            <button
-              key={`carousel-indicator-${index}`}
-              type="button"
-              aria-label={`Show slide ${index + 1}`}
-              aria-current={index === activeSlide ? "true" : undefined}
-              onClick={() => setActiveSlide(index)}
-              className={`h-2.5 w-2.5 rounded-full transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-govGreen ${
-                index === activeSlide
-                  ? "bg-govGreen scale-110 shadow-sm"
-                  : "bg-gray-400/60 hover:bg-gray-500/80"
-              }`}
-            />
-          ))}
-        </div>
-      </div>
+      
+    
     </section>
   );
 }
