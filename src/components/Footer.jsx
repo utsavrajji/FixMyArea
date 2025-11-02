@@ -2,88 +2,90 @@ import { Link } from 'react-router-dom';
 
 function Footer() {
   return (
-    <footer id="contact" className="bg-[#2b2d42] text-white pt-16 pb-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-4 gap-8 mb-8">
+    <footer id="contact" className="bg-[#2b2d42] pt-16 pb-8 text-white">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-10 grid gap-10 md:grid-cols-4">
           {/* Column 1: Logo & Powered by */}
-          <div>
-            <div className="mb-6">
-              <p className="text-gray-400 text-sm mb-3">©2025 <span className="font-semibold text-white">FixMyArea</span></p>
-              <p className="text-gray-400 text-xs mb-4">Powered by</p>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                  <span className="text-orange-600 font-bold text-sm">F</span>
+          <div className="text-center md:text-left">
+            <div className="mb-6 space-y-3">
+              <p className="text-sm text-gray-400">
+                ©2025 <span className="font-semibold text-white">FixMyArea</span>
+              </p>
+              <p className="text-xs text-gray-400 uppercase tracking-widest">Powered by</p>
+              <div className="flex items-center justify-center gap-2 md:justify-start">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white">
+                  <span className="text-sm font-bold text-orange-600">F</span>
                 </div>
                 <span className="text-sm font-semibold">FixMyArea</span>
               </div>
-              <div className="text-xs text-gray-400 leading-relaxed">
+              <div className="space-y-1 text-xs leading-relaxed text-gray-400">
                 <p>Ministry of Electronics & IT (MeitY)</p>
                 <p>Government of India®</p>
               </div>
             </div>
             {/* Social Icons */}
-            <div className="flex gap-3">
-              <a href="#" className="w-9 h-9 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition-colors">
+            <div className="flex justify-center gap-3 md:justify-start">
+              <a href="#" className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-700 transition-colors hover:bg-gray-600">
                 <span className="text-sm">in</span>
               </a>
-              <a href="#" className="w-9 h-9 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition-colors">
+              <a href="#" className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-700 transition-colors hover:bg-gray-600">
                 <span className="text-sm">f</span>
               </a>
-              <a href="#" className="w-9 h-9 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition-colors">
+              <a href="#" className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-700 transition-colors hover:bg-gray-600">
                 <span className="text-sm">𝕏</span>
               </a>
-              <a href="#" className="w-9 h-9 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition-colors">
+              <a href="#" className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-700 transition-colors hover:bg-gray-600">
                 <span className="text-sm">📷</span>
               </a>
             </div>
           </div>
 
           {/* Column 2: Quick Links */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2 text-sm">
+          <div className="text-center md:text-left">
+            <h3 className="mb-4 text-lg font-semibold">Quick Links</h3>
+            <ul className="space-y-2 text-sm text-gray-300">
               <li>
-                <a href="#home" className="text-gray-300 hover:text-white transition-colors flex items-center gap-1">
+                <a href="#home" className="flex items-center justify-center gap-1 transition-colors hover:text-white md:justify-start">
                   <span className="text-xs">›</span> Home
                 </a>
               </li>
               <li>
-                <a href="#how-it-works" className="text-gray-300 hover:text-white transition-colors flex items-center gap-1">
+                <a href="#how-it-works" className="flex items-center justify-center gap-1 transition-colors hover:text-white md:justify-start">
                   <span className="text-xs">›</span> How It Works
                 </a>
               </li>
               <li>
-                <Link to="/dashboard" className="text-gray-300 hover:text-white transition-colors flex items-center gap-1">
+                <Link to="/dashboard" className="flex items-center justify-center gap-1 transition-colors hover:text-white md:justify-start">
                   <span className="text-xs">›</span> Dashboard
                 </Link>
               </li>
               <li>
-                <Link to="/login" className="text-gray-300 hover:text-white transition-colors flex items-center gap-1">
+                <Link to="/login" className="flex items-center justify-center gap-1 transition-colors hover:text-white md:justify-start">
                   <span className="text-xs">›</span> Login
                 </Link>
               </li>
               <li>
-                <a href="#contact" className="text-gray-300 hover:text-white transition-colors flex items-center gap-1">
+                <a href="#contact" className="flex items-center justify-center gap-1 transition-colors hover:text-white md:justify-start">
                   <span className="text-xs">›</span> Contact Us
                 </a>
               </li>
               <li>
-                <a href="#accessibility" className="text-gray-300 hover:text-white transition-colors flex items-center gap-1">
+                <a href="#accessibility" className="flex items-center justify-center gap-1 transition-colors hover:text-white md:justify-start">
                   <span className="text-xs">›</span> Accessibility Statement
                 </a>
               </li>
               <li>
-                <a href="#faq" className="text-gray-300 hover:text-white transition-colors flex items-center gap-1">
+                <a href="#faq" className="flex items-center justify-center gap-1 transition-colors hover:text-white md:justify-start">
                   <span className="text-xs">›</span> Frequently Asked Questions
                 </a>
               </li>
               <li>
-                <a href="#disclaimer" className="text-gray-300 hover:text-white transition-colors flex items-center gap-1">
+                <a href="#disclaimer" className="flex items-center justify-center gap-1 transition-colors hover:text-white md:justify-start">
                   <span className="text-xs">›</span> Disclaimer
                 </a>
               </li>
               <li>
-                <a href="#terms" className="text-gray-300 hover:text-white transition-colors flex items-center gap-1">
+                <a href="#terms" className="flex items-center justify-center gap-1 transition-colors hover:text-white md:justify-start">
                   <span className="text-xs">›</span> Terms & Conditions
                 </a>
               </li>
@@ -91,38 +93,43 @@ function Footer() {
           </div>
 
           {/* Column 3: Useful Links (Partner logos placeholder) */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Useful Links</h3>
+          <div className="text-center md:text-left">
+            <h3 className="mb-4 text-lg font-semibold">Useful Links</h3>
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white rounded p-2 flex items-center justify-center h-16">
-                <span className="text-xs text-gray-600 font-semibold">Digital India</span>
+              <div className="flex h-16 items-center justify-center rounded bg-white p-2">
+                <span className="text-xs font-semibold text-gray-600">Digital India</span>
               </div>
-              <div className="bg-white rounded p-2 flex items-center justify-center h-16">
-                <span className="text-xs text-gray-600 font-semibold">MyGov</span>
+              <div className="flex h-16 items-center justify-center rounded bg-white p-2">
+                <span className="text-xs font-semibold text-gray-600">MyGov</span>
               </div>
-              <div className="bg-white rounded p-2 flex items-center justify-center h-16">
-                <span className="text-xs text-gray-600 font-semibold">India.gov.in</span>
+              <div className="flex h-16 items-center justify-center rounded bg-white p-2">
+                <span className="text-xs font-semibold text-gray-600">India.gov.in</span>
               </div>
-              <div className="bg-white rounded p-2 flex items-center justify-center h-16">
-                <span className="text-xs text-gray-600 font-semibold">Data.gov.in</span>
+              <div className="flex h-16 items-center justify-center rounded bg-white p-2">
+                <span className="text-xs font-semibold text-gray-600">Data.gov.in</span>
               </div>
-              <div className="bg-white rounded p-2 flex items-center justify-center h-16 col-span-2">
-                <span className="text-xs text-gray-600 font-semibold">UMANG</span>
+              <div className="col-span-2 flex h-16 items-center justify-center rounded bg-white p-2">
+                <span className="text-xs font-semibold text-gray-600">UMANG</span>
               </div>
             </div>
           </div>
 
           {/* Column 4: Get in touch */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Get in touch</h3>
-            <div className="text-sm text-gray-300 space-y-3">
+          <div className="text-center md:text-left">
+            <h3 className="mb-4 text-lg font-semibold">Get in touch</h3>
+            <div className="space-y-3 text-sm text-gray-300">
               <p className="leading-relaxed">
-                4th Floor, NeGD, Electronics Niketan, 6<br />
-                CGO Complex, Lodhi Road, New Delhi -<br />
+                4th Floor, NeGD, Electronics Niketan, 6
+                <br className="hidden sm:block" />
+                CGO Complex, Lodhi Road, New Delhi -
+                <br className="hidden sm:block" />
                 110003, India
               </p>
               <p>
-                <a href="mailto:support-fixmyarea@digitalindia.gov.in" className="hover:text-white transition-colors break-all">
+                <a
+                  href="mailto:support-fixmyarea@digitalindia.gov.in"
+                  className="break-words transition-colors hover:text-white"
+                >
                   support-fixmyarea@digitalindia.gov.in
                 </a>
               </p>
@@ -133,8 +140,8 @@ function Footer() {
 
         {/* Bottom timestamp */}
         <div className="border-t border-gray-700 pt-6 text-center">
-          <p className="text-gray-500 text-xs">
-            Last Updated On : {new Date().toLocaleDateString('en-GB')} | v-2.2.7
+          <p className="text-xs text-gray-500">
+            Last Updated On : {new Date().toLocaleDateString("en-GB")} | v-2.2.7
           </p>
         </div>
       </div>
