@@ -24,7 +24,7 @@ function HeroSection() {
   }, []);
 
   return (
-    <section className="relative isolate overflow-hidden flex flex-col items-center justify-center bg-gradient-to-b from-[#f0fff5] via-[#f6fff9] to-white px-4 sm:px-6 text-center min-h-[75vh] sm:min-h-[85vh] py-20 sm:py-24 lg:py-32">
+    <section className="relative isolate flex w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-[#eefcf5] via-[#f6fff9] to-white px-4 text-center min-h-[100dvh] sm:px-6 sm:min-h-[85vh] lg:px-8 lg:py-16">
       <div className="absolute inset-0 -z-10 overflow-hidden">
         {CAROUSEL_IMAGES.map((image, index) => (
           <div
@@ -33,44 +33,48 @@ function HeroSection() {
               index === activeSlide ? "opacity-100" : "opacity-0"
             }`}
           >
-            <img src={image} alt="" className="h-full w-full object-cover object-center" />
+            <img
+              src={image}
+              alt="Local community improvements"
+              className="h-full w-full object-cover object-center sm:object-[50%_45%] md:object-center"
+            />
           </div>
         ))}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/50 to-white/80 sm:via-white/20 sm:to-white/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/65 via-white/30 to-white/40 sm:from-white/45 sm:via-white/15 sm:to-white/25" />
       </div>
 
       <div className="pointer-events-none absolute inset-0 -z-[5]">
-        <div className="absolute -top-20 -left-20 hidden h-64 w-64 rounded-3xl border border-dashed border-[#a6e6c4]/70 bg-[#e7fff0]/50 backdrop-blur-sm animate-pulse-soft sm:block" />
-        <div className="absolute top-16 right-24 hidden h-72 w-72 rounded-full bg-white/60 shadow-soft-hero md:block animate-float-slow" />
-        <div className="absolute bottom-14 left-1/3 hidden h-56 w-56 rounded-3xl bg-[#d8fbe6]/80 blur-2xl animate-float-rev lg:block" />
+        <div className="absolute -top-16 -left-14 hidden h-56 w-56 rounded-3xl border border-dashed border-[#a6e6c4]/70 bg-[#e7fff0]/45 backdrop-blur-sm animate-pulse-soft sm:block" />
+        <div className="absolute top-16 right-16 hidden h-64 w-64 rounded-full bg-white/50 shadow-soft-hero md:block animate-float-slow" />
+        <div className="absolute bottom-12 left-1/3 hidden h-52 w-52 rounded-3xl bg-[#d8fbe6]/70 blur-2xl animate-float-rev lg:block" />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-4xl">
-        <div className="inline-flex items-center gap-2 rounded-full bg-white/60 px-3 py-1.5 text-xs font-medium text-govBlue shadow-soft-hero/40 backdrop-blur-md animate-float-slow sm:gap-3 sm:px-4 sm:py-2 sm:text-sm">
+      <div className="relative z-10 mx-auto w-full max-w-4xl space-y-8 sm:space-y-10">
+        <div className="inline-flex items-center gap-2 rounded-full bg-white/55 px-3 py-1.5 text-xs font-medium text-govBlue shadow-soft-hero/40 backdrop-blur-md animate-float-slow sm:gap-3 sm:px-4 sm:py-2 sm:text-sm">
           <span className="block h-2 w-2 rounded-full bg-govGreen animate-pulse-soft" />
           Empowering citizen-led change
         </div>
 
-        <div className="mt-8 sm:mt-10 rounded-[32px]">
-          <h1 className="text-4xl font-extrabold text-govText leading-tight sm:text-5xl md:text-6xl">
+        <div className="space-y-6 rounded-[28px] sm:space-y-8">
+          <h1 className="text-4xl font-extrabold leading-tight text-govText sm:text-5xl md:text-6xl">
             Your Voice for a Better Locality
           </h1>
 
-          <p className="mx-auto mt-4 max-w-3xl text-base text-gray-700 sm:mt-6 sm:text-lg md:text-2xl">
+          <p className="mx-auto max-w-3xl text-base text-gray-700 sm:text-lg md:text-2xl">
             Post local problems, let the community support them, and help the government solve them faster.
           </p>
 
-          <div className="mt-8 flex w-full flex-col items-center justify-center gap-4 sm:mt-10 sm:flex-row sm:gap-6">
+          <div className="flex w-full flex-col items-stretch justify-center gap-4 sm:flex-row sm:items-center sm:gap-6">
             <a
               href="/login"
-              className="inline-flex w-full items-center justify-center rounded-xl bg-orange-600 px-8 py-3 font-semibold text-white shadow-xl transition-transform duration-300 hover:-translate-y-1 hover:bg-orange-700 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 sm:w-auto"
+              className="inline-flex w-full items-center justify-center rounded-xl bg-orange-600 px-8 py-3 text-base font-semibold text-white shadow-xl transition-transform duration-300 hover:-translate-y-1 hover:bg-orange-700 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 sm:w-auto"
             >
               Report an Issue
             </a>
 
             <button
               onClick={() => navigate("/dashboard")}
-              className="w-full rounded-xl bg-gray-900 px-8 py-3 font-semibold text-white shadow-xl transition-transform duration-300 hover:-translate-y-1 hover:bg-gray-800 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-700 sm:w-auto"
+              className="w-full rounded-xl bg-gray-900 px-8 py-3 text-base font-semibold text-white shadow-xl transition-transform duration-300 hover:-translate-y-1 hover:bg-gray-800 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-700 sm:w-auto"
             >
               View Local Issues
             </button>
@@ -78,8 +82,8 @@ function HeroSection() {
         </div>
       </div>
 
-      <div className="absolute bottom-6 left-1/2 z-20 flex w-full -translate-x-1/2 justify-center px-4 sm:bottom-10">
-        <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-soft-hero backdrop-blur-md">
+      <div className="absolute bottom-4 left-1/2 z-20 flex w-full -translate-x-1/2 justify-center px-6 sm:bottom-8">
+        <div className="inline-flex items-center gap-1.5 rounded-full bg-white/85 px-3 py-2 shadow-soft-hero backdrop-blur-md sm:gap-2 sm:px-4">
           {CAROUSEL_IMAGES.map((_, index) => (
             <button
               key={`carousel-indicator-${index}`}
@@ -87,7 +91,7 @@ function HeroSection() {
               aria-label={`Show slide ${index + 1}`}
               aria-current={index === activeSlide ? "true" : undefined}
               onClick={() => setActiveSlide(index)}
-              className={`h-3 w-3 rounded-full transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-govGreen ${
+              className={`h-2.5 w-2.5 rounded-full transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-govGreen ${
                 index === activeSlide
                   ? "bg-govGreen scale-110 shadow-sm"
                   : "bg-gray-400/60 hover:bg-gray-500/80"
