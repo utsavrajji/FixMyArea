@@ -105,7 +105,7 @@ function Register() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#f3fff6] via-white to-[#f8fff8] flex items-center justify-center px-4 py-16">
+    <div className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden bg-gradient-to-b from-[#f3fff6] via-white to-[#f8fff8] px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-24 right-10 hidden h-72 w-72 rounded-[42px] border border-dashed border-[#a3e4c1]/70 bg-[#e7fff0]/60 backdrop-blur-md animate-pulse-soft sm:block" />
         <div className="absolute top-28 left-16 hidden h-56 w-56 rounded-full bg-[#dff8eb]/90 blur-2xl md:block animate-float-slow" />
@@ -113,14 +113,14 @@ function Register() {
       </div>
 
       
- <div className="relative z-10 w-full max-w-lg">
-        <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm font-medium text-blue-600 shadow-lg backdrop-blur">
+ <div className="relative z-10 w-full max-w-md sm:max-w-lg">
+        <div className="inline-flex items-center gap-2 rounded-full bg-white/75 px-3 py-1.5 text-xs font-medium text-blue-600 shadow-lg backdrop-blur sm:px-4 sm:py-2 sm:text-sm">
           <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
           Join the FixMyArea community
         </div>
-        <div className="mt-6 rounded-[32px] border border-[#a3e4c1]/60 bg-gradient-to-br from-white/95 via-white/80 to-[#dff8eb]/90 px-10 py-12 shadow-2xl backdrop-blur-xl">
-          <h2 className="text-3xl font-bold text-govText text-center">Create your account</h2>
-          <p className="mt-2 text-center text-gray-600">
+        <div className="mt-6 rounded-[28px] border border-[#a3e4c1]/60 bg-gradient-to-br from-white/95 via-white/85 to-[#dff8eb]/90 px-6 py-8 shadow-2xl backdrop-blur-xl sm:rounded-[32px] sm:px-8 sm:py-10">
+          <h2 className="text-center text-2xl font-bold text-govText sm:text-3xl">Create your account</h2>
+          <p className="mt-3 text-center text-sm text-gray-600 sm:mt-2 sm:text-base">
             Report issues, rally community support, and help transform your locality.
           </p>
 
@@ -130,8 +130,8 @@ function Register() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <form onSubmit={handleSubmit} className="mt-8 space-y-5 sm:space-y-6">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-govText/80">Full Name</label>
                 <input
@@ -171,7 +171,7 @@ function Register() {
               />
             </div>
 
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-govText/80">Password</label>
                 <input
@@ -199,14 +199,14 @@ function Register() {
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex-1 select-none rounded-2xl bg-white/70 px-4 py-3 text-center text-lg font-bold tracking-[0.4em] text-govText shadow-inner">
+              <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-stretch sm:justify-between">
+                <div className="flex-1 select-none rounded-2xl bg-white/70 px-4 py-3 text-center text-base font-bold tracking-[0.3em] text-govText shadow-inner sm:text-lg sm:tracking-[0.4em]">
                   {captcha}
                 </div>
                 <button
                   type="button"
                   onClick={refreshCaptcha}
-                  className="rounded-full bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:from-blue-600 hover:to-blue-700 transition"
+                  className="w-full rounded-full bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-blue-700 sm:w-auto"
                 >
                   Refresh
                 </button>
