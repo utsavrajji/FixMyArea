@@ -64,129 +64,183 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
- 
+
     setLoading(true);
     try {
-      const { user } = await createUserWithEmailAndPassword(auth, form.email, form.password);
+      // Step 1: Create Firebase Auth user
+      const userCredential = await createUserWithEmailAndPassword(auth, form.email, form.password);
+      const user = userCredential.user;
 
+      // Step 2: Create Firestore user document with same UID
       await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
         name: form.name,
         phone: form.phone,
         email: form.email,
         role: "citizen",
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
       });
 
       setError("");
-      alert("Registration successful! Redirecting...");
+      alert("Registration successful! Redirecting to dashboard...");
       navigate("/dashboard");
     } catch (err) {
-      // Firebase "email-already-in-use" code
+      console.error("Registration error:", err.code, err.message);
+      
+      // Handle specific Firebase errors
       if (err.code === "auth/email-already-in-use") {
-        setError("Account already exists, please log in!");
-        alert("Account already exists, please log in!");
+        setError("This email is already registered. Please log in.");
+        alert("Account already exists with this email. Please log in!");
+      } else if (err.code === "permission-denied") {
+        setError("Permission denied. Please check Firestore security rules.");
+        alert("Registration failed: Permission denied. Contact support.");
       } else {
-        setError(err.message);
+        setError(err.message || "Registration failed. Please try again.");
         alert(`Registration failed: ${err.message}`);
       }
       refreshCaptcha();
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center font-sans p-6">
-      <div className="max-w-md w-full bg-white border-2 border-gray-300 shadow-xl p-10 rounded-lg">
-        <h2 className="text-2xl font-bold text-center mb-6 text-orange-600">User Registration</h2>
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#f3fff6] via-white to-[#f8fff8] flex items-center justify-center px-4 py-16">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-24 right-10 hidden h-72 w-72 rounded-[42px] border border-dashed border-[#a3e4c1]/70 bg-[#e7fff0]/60 backdrop-blur-md animate-pulse-soft sm:block" />
+        <div className="absolute top-28 left-16 hidden h-56 w-56 rounded-full bg-[#dff8eb]/90 blur-2xl md:block animate-float-slow" />
+        <div className="absolute bottom-10 right-1/4 hidden h-64 w-64 rounded-[36px] bg-white/60 shadow-soft-hero/80 lg:block animate-float-rev" />
+      </div>
 
-        {error && <p className="text-center text-red-600 font-semibold mb-4">{error}</p>}
+      
+ <div className="relative z-10 w-full max-w-lg">
+        <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm font-medium text-blue-600 shadow-lg backdrop-blur">
+          <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+          Join the FixMyArea community
+        </div>
+        <div className="mt-6 rounded-[32px] border border-[#a3e4c1]/60 bg-gradient-to-br from-white/95 via-white/80 to-[#dff8eb]/90 px-10 py-12 shadow-2xl backdrop-blur-xl">
+          <h2 className="text-3xl font-bold text-govText text-center">Create your account</h2>
+          <p className="mt-2 text-center text-gray-600">
+            Report issues, rally community support, and help transform your locality.
+          </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            name="name"
-            placeholder="Full Name"
-            value={form.name}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-orange-600"
-            required
-          />
-          <input
-            type="tel"
-            name="phone"
-            placeholder="Phone Number"
-            value={form.phone}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-orange-600"
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email ID"
-            value={form.email}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-orange-600"
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-orange-600"
-            required
-          />
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            value={form.confirmPassword}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-orange-600"
-            required
-          />
-
-          <div className="flex items-center justify-between mt-4">
-            <div className="bg-gray-200 text-lg font-bold px-4 py-2 rounded select-none tracking-widest">
-              {captcha}
+          {error && (
+            <div className="mt-6 rounded-xl border border-red-200 bg-red-50/80 px-4 py-3 text-center text-sm font-medium text-red-600 shadow-sm">
+              {error}
             </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-govText/80">Full Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Your full name"
+                  value={form.name}
+                  onChange={handleChange}
+                  className="w-full rounded-2xl border border-gray-200/80 bg-white/70 px-4 py-3 text-gray-700 shadow-sm transition focus:border-govBlue focus:outline-none focus:ring-2 focus:ring-govBlue/20"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-govText/80">Phone Number</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="e.g. 9876543210"
+                  value={form.phone}
+                  onChange={handleChange}
+                  className="w-full rounded-2xl border border-gray-200/80 bg-white/70 px-4 py-3 text-gray-700 shadow-sm transition focus:border-govBlue focus:outline-none focus:ring-2 focus:ring-govBlue/20"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-govText/80">Email</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="you@example.com"
+                value={form.email}
+                onChange={handleChange}
+                className="w-full rounded-2xl border border-gray-200/80 bg-white/70 px-4 py-3 text-gray-700 shadow-sm transition focus:border-govBlue focus:outline-none focus:ring-2 focus:ring-govBlue/20"
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-govText/80">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Minimum 6 characters"
+                  value={form.password}
+                  onChange={handleChange}
+                  className="w-full rounded-2xl border border-gray-200/80 bg-white/70 px-4 py-3 text-gray-700 shadow-sm transition focus:border-govBlue focus:outline-none focus:ring-2 focus:ring-govBlue/20"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-govText/80">Confirm Password</label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Re-enter password"
+                  value={form.confirmPassword}
+                  onChange={handleChange}
+                  className="w-full rounded-2xl border border-gray-200/80 bg-white/70 px-4 py-3 text-gray-700 shadow-sm transition focus:border-govBlue focus:outline-none focus:ring-2 focus:ring-govBlue/20"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1 select-none rounded-2xl bg-white/70 px-4 py-3 text-center text-lg font-bold tracking-[0.4em] text-govText shadow-inner">
+                  {captcha}
+                </div>
+                <button
+                  type="button"
+                  onClick={refreshCaptcha}
+                  className="rounded-full bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:from-blue-600 hover:to-blue-700 transition"
+                >
+                  Refresh
+                </button>
+              </div>
+
+              <input
+                type="text"
+                placeholder="Enter the characters above"
+                value={userCaptcha}
+                onChange={(e) => setUserCaptcha(e.target.value)}
+                className="w-full rounded-2xl border border-gray-200/80 bg-white/70 px-4 py-3 text-gray-700 shadow-sm transition focus:border-govBlue focus:outline-none focus:ring-2 focus:ring-govBlue/20"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 py-3.5 font-semibold text-white shadow-2xl transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500/70 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {loading ? "Registering..." : "Register"}
+            </button>
+          </form>
+
+          <div className="mt-8 flex flex-col gap-4 text-sm font-medium text-govBlue/80 md:flex-row md:items-center md:justify-between">
+            <span>Already have an account?</span>
             <button
               type="button"
-              onClick={refreshCaptcha}
-              className="text-orange-600 text-sm underline hover:text-[#E66B10]"
+              onClick={() => navigate("/login")}
+              className="transition hover:text-orange-600"
             >
-              Refresh
+              Log in instead
             </button>
           </div>
-          <input
-            type="text"
-            placeholder="Enter captcha"
-            value={userCaptcha}
-            onChange={e => setUserCaptcha(e.target.value)}
-            className="w-full p-3 border rounded-md mt-2"
-            required
-          />
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-orange-600 text-white py-3 rounded-md font-semibold hover:bg-[#E66B10] transition"
-          >
-            {loading ? "Registering..." : "Register"}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center text-sm text-gray-700">
-          Already have an Account?{" "}
-          <button
-            type="button"
-            onClick={() => navigate("/login")}
-            className="text-orange-600 underline hover:text-[#E66B10] font-semibold"
-          >
-            Log in
-          </button>
         </div>
       </div>
     </div>

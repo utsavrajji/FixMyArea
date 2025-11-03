@@ -24,23 +24,23 @@ function HeroSection() {
   }, []);
 
   return (
-    <section className="relative isolate flex w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-[#eefcf5] via-[#f6fff9] to-white px-4 text-center min-h-[50dvh] sm:px-6 sm:min-h-[85vh] lg:px-8 lg:py-16">
+    <section className="relative isolate flex w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-[#eefcf5] via-[#f6fff9] to-white px-4 py-16 text-center sm:px-6 sm:py-20 md:min-h-[80vh] lg:px-10 lg:pt-28 lg:pb-24">
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <div
-          className="flex h-full w-full transition-transform duration-[1200ms] ease-out"
+          className="flex h-full min-h-[320px] w-full transition-transform duration-[1200ms] ease-out sm:min-h-full"
           style={{ transform: `translateX(-${activeSlide * 100}%)` }}
         >
-          {CAROUSEL_IMAGES.map((image, index) => (
-            <div key={image} className="flex-shrink-0 w-full h-full">
+          {CAROUSEL_IMAGES.map((image) => (
+            <div key={image} className="flex h-full w-full flex-shrink-0">
               <img
                 src={image}
                 alt="Local community improvements"
-                className="h-full w-full object-contain object-center sm:object-cover sm:object-center md:object-[50%_45%] lg:object-center"
+                className="h-full w-full object-cover object-center md:object-[50%_45%]"
               />
             </div>
           ))}
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-white/65 via-white/30 to-white/40 sm:from-white/45 sm:via-white/15 sm:to-white/25" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/75 via-white/35 to-white/45 sm:from-white/50 sm:via-white/15 sm:to-white/25" />
       </div>
 
       <div className="pointer-events-none absolute inset-0 -z-[5]">
@@ -49,8 +49,8 @@ function HeroSection() {
         <div className="absolute bottom-12 left-1/3 hidden h-52 w-52 rounded-3xl bg-[#d8fbe6]/70 blur-2xl animate-float-rev lg:block" />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-4xl space-y-8 sm:space-y-10">
-        <div className="inline-flex items-center gap-2 rounded-full bg-white/55 px-3 py-1.5 text-xs font-medium text-govBlue shadow-soft-hero/40 backdrop-blur-md animate-float-slow sm:gap-3 sm:px-4 sm:py-2 sm:text-sm">
+      <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center gap-8 sm:max-w-4xl sm:gap-10">
+        <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1.5 text-xs font-medium text-govBlue shadow-soft-hero/40 backdrop-blur-md animate-float-slow sm:gap-3 sm:px-4 sm:py-2 sm:text-sm">
           <span className="block h-2 w-2 rounded-full bg-govGreen animate-pulse-soft" />
           Empowering citizen-led change
         </div>
