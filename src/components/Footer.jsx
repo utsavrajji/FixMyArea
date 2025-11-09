@@ -70,19 +70,7 @@ function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#accessibility" className="flex items-center justify-center gap-1 transition-colors hover:text-white sm:justify-start">
-                  <span className="text-xs">›</span> Accessibility Statement
-                </a>
-              </li>
-              <li>
-                <a href="#faq" className="flex items-center justify-center gap-1 transition-colors hover:text-white sm:justify-start">
-                  <span className="text-xs">›</span> Frequently Asked Questions
-                </a>
-              </li>
-              <li>
-                <a href="#disclaimer" className="flex items-center justify-center gap-1 transition-colors hover:text-white sm:justify-start">
-                  <span className="text-xs">›</span> Disclaimer
-                </a>
+                
               </li>
               <li>
                 <a href="#terms" className="flex items-center justify-center gap-1 transition-colors hover:text-white sm:justify-start">

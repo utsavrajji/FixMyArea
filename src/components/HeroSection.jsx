@@ -73,7 +73,7 @@ function HeroSection() {
             </a>
 
             <button
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/local-issues")}
               className="w-full rounded-xl bg-gray-900 px-8 py-3 text-base font-semibold text-white shadow-xl transition-transform duration-300 hover:-translate-y-1 hover:bg-gray-800 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-700 sm:w-auto"
             >
               View Local Issues

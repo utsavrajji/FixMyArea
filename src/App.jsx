@@ -8,6 +8,8 @@ import ReportIssue from "./components/ReportIssue";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminGate from "./pages/AdminGate";
 import ResolvedIssues from "./pages/ResolvedIssues";
+import LocalIssues from "./pages/LocalIssues";
+import IssueDetail from "./pages/IssueDetail";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/report-issue" element={<ReportIssue />} />
+      <Route path="/local-issues" element={<LocalIssues />} />
+      <Route path="/issue/:id" element={<IssueDetail />} />
       {/* You can add <Route path="/admin" .../> in future */}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
          <Route path="/admin" element={<AdminGate />} />

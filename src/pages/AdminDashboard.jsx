@@ -4,6 +4,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import IssueReviewCard from "../components/IssueReviewCard";
 import Analytics from "../components/Analytics";
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
 
 const STATUS = [
   "All", "Pending", "Under Review", "Not Important", "Fake", "In Progress", "Resolved", "Rejected"
@@ -55,9 +56,10 @@ export default function AdminDashboard() {
   }, [category, status, search]);
 
   return (
-    <div className="min-h-screen flex bg-gray-100">
-      {/* Sidebar */}
-      <aside className="w-56 p-6 bg-white shadow-sm border-r min-h-screen flex flex-col gap-4">
+    <>
+      <div className="min-h-screen flex bg-gray-100">
+        {/* Sidebar */}
+        <aside className="w-56 p-6 bg-white shadow-sm border-r min-h-screen flex flex-col gap-4">
         <div className="font-bold text-lg text-orange-800">Admin Menu</div>
         {STATUS.map(s => (
           <button
@@ -116,7 +118,9 @@ export default function AdminDashboard() {
             {!issues.length && <div className="text-gray-400">No issues found.</div>}
           </div>
         )}
-      </main>
-    </div>
+        </main>
+      </div>
+      <Footer />
+    </>
   );
 }

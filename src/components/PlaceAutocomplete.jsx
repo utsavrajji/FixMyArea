@@ -13,8 +13,8 @@ export default function PlaceAutocomplete({ placeholder = "Search place", onSele
       .then((gmaps) => {
         if (!mounted || !inputRef.current) return;
         autocomplete = new gmaps.places.Autocomplete(inputRef.current, {
-          fields: ["geometry", "formatted_address", "name"],
-          componentRestrictions: { country: "in" }, // change if needed
+          fields: ["geometry", "formatted_address", "name", "address_components"],
+          componentRestrictions: { country: "in" },
         });
         autocomplete.addListener("place_changed", () => {
           const place = autocomplete.getPlace();
@@ -26,6 +26,7 @@ export default function PlaceAutocomplete({ placeholder = "Search place", onSele
             address: place.formatted_address,
             lat,
             lon,
+            addressComponents: place.address_components ?? [],
           });
         });
       })

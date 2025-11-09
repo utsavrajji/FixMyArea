@@ -35,13 +35,20 @@ export default function ReportIssue() {
     if (!validate()) return;
     setLoading(true);
 
+    const user = auth.currentUser;
+    if (!user) {
+      setError("Please log in to report an issue.");
+      setLoading(false);
+      navigate("/login");
+      return;
+    }
+
     try {
-      // 1) Upload image to Cloudinary
       const { url: photoURL, publicId } = await uploadToCloudinary(photo, "issues");
 
-      // 2) Save text/meta to Firestore
       await addDoc(collection(db, "issues"), {
-        userId: auth.currentUser?.uid || "demo-user",
+        userId: user.uid,
+        createdBy: user.uid,
         title: `${category} - ${subIssue}`,
         category,
         subIssue,

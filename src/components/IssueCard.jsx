@@ -2,9 +2,11 @@ import LikeButton from "./LikeButton";
 import CommentsSection from "./CommentsSection";
 import RetweetButton from "./RetweetButton";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function IssueCard({ issue }) {
+export default function IssueCard({ issue, variant = "full" }) {
   const [showComments, setShowComments] = useState(false);
+  const navigate = useNavigate();
 
   const {
     id, title, category, subIssue, description, photoURL, status, location,
@@ -17,6 +19,41 @@ export default function IssueCard({ issue }) {
       : status === "In Progress"
       ? "bg-yellow-100 text-yellow-700"
       : "bg-red-100 text-red-700";
+
+  const handleClick = () => {
+    if (variant === "summary") {
+      navigate(`/issue/${id}`);
+    }
+  };
+
+  if (variant === "summary") {
+    return (
+      <div 
+        onClick={handleClick}
+        className="border border-gray-200 rounded-xl p-4 flex gap-4 cursor-pointer hover:border-govGreen hover:shadow-lg transition-all"
+      >
+        {photoURL && (
+          <img src={photoURL} alt="issue" className="w-32 h-32 object-cover rounded flex-shrink-0" />
+        )}
+        <div className="flex flex-col gap-2 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="font-semibold text-lg text-gray-900">{title || `${category} - ${subIssue}`}</h3>
+            <span className={`text-xs px-2 py-1 rounded-full ${pill}`}>{status}</span>
+          </div>
+          <div className="text-sm text-gray-600">
+            {[
+              location?.village,
+              location?.block,
+              location?.district,
+              location?.state,
+            ]
+              .filter(Boolean)
+              .join(", ")}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="border border-gray-200 rounded-xl p-4 flex flex-col gap-2">

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { auth } from "../firebase/config";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -29,8 +30,9 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center font-sans p-4">
-      <div className="max-w-md w-full bg-white rounded-lg p-10 shadow-lg">
+    <>
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center font-sans p-4">
+        <div className="max-w-md w-full bg-white rounded-lg p-10 shadow-lg">
         <h2 className="text-2xl font-semibold mb-6 text-center text-govBlue">Forgot Password</h2>
 
         {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
@@ -64,8 +66,10 @@ function ForgotPassword() {
             Login
           </button>
         </div>
+        </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }
 

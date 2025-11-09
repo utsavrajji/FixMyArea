@@ -3,6 +3,7 @@ import { auth, db } from "../firebase/config";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
 
 function Register() {
   const [form, setForm] = useState({
@@ -105,15 +106,16 @@ function Register() {
   };
 
   return (
-    <div className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden bg-gradient-to-b from-[#f3fff6] via-white to-[#f8fff8] px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-24 right-10 hidden h-72 w-72 rounded-[42px] border border-dashed border-[#a3e4c1]/70 bg-[#e7fff0]/60 backdrop-blur-md animate-pulse-soft sm:block" />
-        <div className="absolute top-28 left-16 hidden h-56 w-56 rounded-full bg-[#dff8eb]/90 blur-2xl md:block animate-float-slow" />
-        <div className="absolute bottom-10 right-1/4 hidden h-64 w-64 rounded-[36px] bg-white/60 shadow-soft-hero/80 lg:block animate-float-rev" />
-      </div>
+    <>
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-b from-[#f3fff6] via-white to-[#f8fff8] px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-24 right-10 hidden h-72 w-72 rounded-[42px] border border-dashed border-[#a3e4c1]/70 bg-[#e7fff0]/60 backdrop-blur-md animate-pulse-soft sm:block" />
+          <div className="absolute top-28 left-16 hidden h-56 w-56 rounded-full bg-[#dff8eb]/90 blur-2xl md:block animate-float-slow" />
+          <div className="absolute bottom-10 right-1/4 hidden h-64 w-64 rounded-[36px] bg-white/60 shadow-soft-hero/80 lg:block animate-float-rev" />
+        </div>
 
-      
- <div className="relative z-10 w-full max-w-md sm:max-w-lg">
+        
+   <div className="relative z-10 w-full max-w-md sm:max-w-lg">
         <div className="inline-flex items-center gap-2 rounded-full bg-white/75 px-3 py-1.5 text-xs font-medium text-blue-600 shadow-lg backdrop-blur sm:px-4 sm:py-2 sm:text-sm">
           <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
           Join the FixMyArea community
@@ -243,7 +245,9 @@ function Register() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+      <Footer />
+    </>
   );
 }
 

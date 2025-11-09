@@ -6,6 +6,7 @@ import MyIssues from "../components/MyIssues";
 import useUserProfile from "../hooks/useUserProfile";
 import UserHeader from "../components/UserHeader";
 import ProfileCard from "../components/ProfileCard";
+import Footer from "../components/Footer";
 
 export default function Dashboard() {
   const [selectedLocation, setSelectedLocation] = useState({
@@ -24,8 +25,9 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <>
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Top header with user badge + actions */}
         <UserHeader
           profile={{ ...profile, email: profile?.email || user?.email }}
@@ -86,7 +88,9 @@ export default function Dashboard() {
             </div>
           </aside>
         </div>
+        </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }

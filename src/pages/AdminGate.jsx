@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
 
 // Set your admin password here
 const ADMIN_PASSWORD = "Utsav123";
@@ -29,8 +30,9 @@ export default function AdminGate() {
   // Don't use navigate() directly in render, only in useEffect.
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-      <div className="w-full max-w-xs bg-white rounded shadow p-8">
+    <>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+        <div className="w-full max-w-xs bg-white rounded shadow p-8">
         <h1 className="text-xl font-bold text-orange-700 mb-6 text-center">Admin Login</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
@@ -49,7 +51,9 @@ export default function AdminGate() {
           </button>
         </form>
         {error && <div className="text-red-600 mt-4 text-sm text-center">{error}</div>}
+        </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }
