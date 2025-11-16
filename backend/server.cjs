@@ -185,6 +185,9 @@ app.post("/api/verify-reset-token", (req, res) => {
     res.json({ verified: false, message: "Invalid or expired token" });
   }
 });
+app.get("/", (req, res) => {
+  res.send("FixMyArea Backend Server is running.");
+});
 
 // ========== SERVER START ==========
 
