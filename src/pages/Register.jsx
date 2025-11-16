@@ -5,6 +5,9 @@ import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 
+// Get API URL from environment variable
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+
 function Register() {
   const [form, setForm] = useState({
     name: "",
@@ -67,7 +70,7 @@ function Register() {
     return true;
   };
 
-  // Send OTP via backend
+  // Send OTP via backend (using environment variable)
   const sendOtp = async () => {
     if (!form.email) {
       setError("Please enter a valid email to receive OTP.");
@@ -76,7 +79,7 @@ function Register() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("http://localhost:3001/api/send-otp", {
+      const res = await fetch(`${API_URL}/api/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: form.email }),
@@ -88,14 +91,15 @@ function Register() {
       } else {
         setError("Failed to send OTP. Please try again.");
       }
-    } catch {
+    } catch (err) {
+      console.error("Network error:", err);
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Verify OTP via backend
+  // Verify OTP via backend (using environment variable)
   const verifyOtp = async () => {
     if (!enteredOtp) {
       setError("Please enter the OTP.");
@@ -104,7 +108,7 @@ function Register() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("http://localhost:3001/api/verify-otp", {
+      const res = await fetch(`${API_URL}/api/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: form.email, otp: enteredOtp }),
@@ -116,7 +120,8 @@ function Register() {
       } else {
         setError("Incorrect OTP. Please try again.");
       }
-    } catch {
+    } catch (err) {
+      console.error("Network error:", err);
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
@@ -332,7 +337,7 @@ function Register() {
               <button
                 type="submit"
                 disabled={loading || !otpVerified}
-                className="w-full rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 py-3.5 font-semibold text-white shadow-2xl transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500/70 disabled:cursor-not-allowed disabled:opacity-70"
+                className="w-full rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 py-3.5 font-semibold text-white shadow-2xl transition-all duration-300 hover:from-orange-600 hover:to-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500/70 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {loading ? "Registering..." : "Register"}
               </button>
