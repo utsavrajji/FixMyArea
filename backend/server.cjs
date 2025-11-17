@@ -7,7 +7,7 @@ const app = express();
 
 // CORS - Allow all origins
 app.use(cors({ 
-  origin: '*', 
+  origin: 'https://fix-my-area-seven.vercel.app', 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true 
 }));
