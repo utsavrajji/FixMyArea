@@ -15,6 +15,7 @@ export default function IssueDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  console.log("Fetching issue with ID:", id);
   useEffect(() => {
     const fetchIssue = async () => {
       try {

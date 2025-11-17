@@ -34,6 +34,7 @@ export default function EmailForm({ issue, onClose }) {
           issueId: issue.id || ""
         }),
       });
+      console.log("Email send response status:", response.status);
 
       const data = await response.json();
 
