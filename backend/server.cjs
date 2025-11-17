@@ -2,7 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
 const bodyParser = require("body-parser");
-
+require('dotenv').config(
+  { path: '.env' }
+);
 const app = express();
 
 // CORS - Allow all origins
@@ -13,13 +15,13 @@ app.use(cors({
 }));
 
 app.use(bodyParser.json());
-
+console.log(process.env.EMAIL_USER);
 // Nodemailer transporter setup
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.EMAIL_USER || "fixmyareas@gmail.com",
-    pass: process.env.EMAIL_PASS || "tiep mcpb mfzo cgar",
+    user: process.env.EMAIL_USER ,
+    pass: process.env.EMAIL_PASS ,
   },
 });
 
@@ -317,7 +319,7 @@ app.get("/", (req, res) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT ;
 app.listen(PORT, () => {
   console.log(`🚀 Backend running on port ${PORT}`);
   console.log(`📧 Email service: Gmail (fixmyareas@gmail.com)`);
