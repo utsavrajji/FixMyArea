@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.EMAIL_USER || "fixmyareas@gmail.com",
-    pass: process.env.EMAIL_PASS || "tiepmcpbmfzocgar",
+    pass: process.env.EMAIL_PASS || "tiep mcpb mfzo cgar",
   },
 });
 
@@ -58,7 +58,7 @@ app.post("/api/send-to-government", async (req, res) => {
   console.log(`📋 Issue: ${issueTitle}`);
 
   const mailOptions = {
-    from: '"FixMyArea - Citizen Portal" <fixmyareas@gmail.com>',
+    from: process.env.EMAIL_USER || "fixmyareas@gmail.com",
     to: governmentEmail,
     subject: `🚨 Community Issue Report: ${issueTitle}`,
     html: `
