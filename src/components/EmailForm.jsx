@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API_URL = "https://fixmyarea.onrender.com";
+const API_URL = import.meta.env.DEV ? "http://localhost:3001" : "https://fixmyarea.onrender.com";
 
 export default function EmailForm({ issue, onClose }) {
   const [governmentEmail, setGovernmentEmail] = useState(issue.responsibleEmail || "");
@@ -17,21 +17,241 @@ export default function EmailForm({ issue, onClose }) {
 
     setLoading(true);
     setError("");
+const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f5f5f5;
+            padding: 20px;
+          }
+          .email-container { 
+            max-width: 700px; 
+            margin: 0 auto; 
+            background: #ffffff; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1); 
+          }
+          .header { 
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%); 
+            padding: 40px 30px; 
+            text-align: center; 
+            color: white;
+          }
+          .logo { 
+            font-size: 36px; 
+            margin-bottom: 10px;
+          }
+          .header-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 8px;
+          }
+          .content { 
+            padding: 40px 30px; 
+          }
+          .alert-badge {
+            display: inline-block;
+            background: #ff4444;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 25px;
+          }
+          .issue-title {
+            font-size: 26px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.3;
+          }
+          .info-section {
+            background: #f8f9fa;
+            border-left: 4px solid #FF6B35;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+          }
+          .info-row {
+            display: flex;
+            margin-bottom: 12px;
+          }
+          .info-label {
+            font-weight: bold;
+            color: #666;
+            min-width: 140px;
+            font-size: 14px;
+          }
+          .info-value {
+            color: #333;
+            font-size: 14px;
+            flex: 1;
+          }
+          .description-box {
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+          }
+          .description-text {
+            color: #555;
+            line-height: 1.7;
+            font-size: 15px;
+          }
+          .image-container {
+            margin: 25px 0;
+            text-align: center;
+          }
+          .issue-image {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+          }
+          .stats-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 25px 0;
+          }
+          .stats-number {
+            font-size: 48px;
+            font-weight: bold;
+            color: #FF6B35;
+          }
+          .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+            color: white;
+            padding: 16px 40px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 25px 0;
+          }
+          .action-required {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+          }
+          .footer { 
+            background: #2c3e50; 
+            padding: 30px; 
+            text-align: center; 
+            color: white;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="email-container">
+          <div class="header">
+            <div class="logo">🏙️</div>
+            <div class="header-title">FixMyArea</div>
+            <p style="font-size: 14px; opacity: 0.95;">Citizen-Government Communication Portal</p>
+          </div>
 
+          <div class="content">
+            <div class="alert-badge">🚨 NEW ISSUE REPORTED</div>
+            
+            <div class="issue-title">${issue.issueTitle}</div>
+
+            <div class="info-section">
+              <div class="info-row">
+                <span class="info-label">📂 Category:</span>
+                <span class="info-value">${issue.issueCategory || 'General Issue'}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">📍 Location:</span>
+                <span class="info-value">${issue.issueLocation || 'Location not specified'}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">👤 Reported By:</span>
+                <span class="info-value">${issue.reportedBy || 'Anonymous Citizen'}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">📅 Date:</span>
+                <span class="info-value">${new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+              </div>
+            </div>
+
+            ${issue.upvotes ? `
+              <div class="stats-box">
+                <div class="stats-number">👍 ${issue.upvotes}</div>
+                <p style="margin-top: 8px; font-size: 14px; color: #666;">Community Members Support This Issue</p>
+              </div>
+            ` : ''}
+
+            <div class="description-box">
+              <p style="font-weight: bold; color: #FF6B35; margin-bottom: 15px;">📝 Detailed Description</p>
+              <div class="description-text">${issue.issueDescription || 'No detailed description provided.'}</div>
+            </div>
+
+            ${issue.imageUrl ? `
+              <div class="image-container">
+                <p style="font-weight: bold; color: #FF6B35; margin-bottom: 15px;">📸 Visual Evidence</p>
+                <img src="${issue.imageUrl}" alt="Issue Evidence" class="issue-image" />
+              </div>
+            ` : ''}
+
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="https://fix-my-area-seven.vercel.app/issue/${issue.issueId || ''}" class="cta-button">
+                🔍 View Full Issue Details
+              </a>
+            </div>
+
+            <div class="action-required">
+              <p style="font-weight: bold; color: #856404; margin-bottom: 10px;">⚠️ Government Action Required</p>
+              <p style="color: #856404; font-size: 14px; line-height: 1.6;">
+                This issue has been officially reported through FixMyArea. Please:
+              </p>
+              <ul style="margin: 12px 0 0 20px; line-height: 1.8; color: #856404;">
+                <li>Acknowledge receipt within 48 hours</li>
+                <li>Conduct site inspection</li>
+                <li>Provide resolution timeline</li>
+                <li>Update status regularly</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="footer">
+            <p style="font-size: 16px; font-weight: bold; margin-bottom: 12px;">🏛️ Official Government Communication</p>
+            <p style="font-size: 13px; opacity: 0.9; margin-bottom: 20px;">
+              Sent from FixMyArea citizen engagement platform
+            </p>
+            <p style="font-size: 11px; opacity: 0.7; margin-top: 20px;">
+              © 2025 FixMyArea | Empowering Communities
+            </p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
     try {
       const response = await fetch(`${API_URL}/api/send-to-government`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          governmentEmail: governmentEmail,
+          governmentEmail,
           issueTitle: issue.title,
           issueDescription: issue.description,
           issueCategory: issue.category,
-          issueLocation: Object.values(issue.location || {}).join(", "),
-          reportedBy: issue.userName || "Anonymous Citizen",
+          issueLocation: issue.location?.address || 'Not specified',
+          reportedBy: issue.userName || 'Anonymous',
           upvotes: issue.upvotes || 0,
-          imageUrl: issue.imageUrl || "",
-          issueId: issue.id || ""
+          imageUrl: issue.photo,
+          issueId: issue.id
         }),
       });
       console.log("Email send response status:", response.status);

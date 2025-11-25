@@ -1,7 +1,7 @@
 {
   "name": "fixmyarea-backend",
-  "version": "1.0.0",
-  "description": "Backend API for FixMyArea government email service",
+  "version": "2.0.0",
+  "description": "Backend API for FixMyArea - Government Email Service",
   "main": "server.cjs",
   "scripts": {
     "start": "node server.cjs",
@@ -12,9 +12,8 @@
   "dependencies": {
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "nodemailer": "^7.0.10"
+    "resend": "^3.5.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
