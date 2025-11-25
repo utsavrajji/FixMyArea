@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { Resend } = require("resend");
+//const { Resend } = require("resend");
 const bodyParser = require("body-parser");
 
 const app = express();
@@ -18,7 +18,7 @@ app.use(cors({
 app.use(bodyParser.json());
 
 // Initialize Resend with your API key
-const resend = new Resend(process.env.RESEND_API_KEY);
+//const resend = new Resend(process.env.RESEND_API_KEY);
 
 console.log("✅ Email service initialized: Resend API");
 
