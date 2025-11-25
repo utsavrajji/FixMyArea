@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API_URL = import.meta.env.DEV ? "http://localhost:3001" : "https://fixmyarea.onrender.com";
+const API_URL =  'https://talkforguide.com/api/test-mail';
 
 export default function EmailForm({ issue, onClose }) {
   const [governmentEmail, setGovernmentEmail] = useState(issue.responsibleEmail || "");
@@ -239,22 +239,16 @@ const html = `
       </html>
     `;
     try {
-      const response = await fetch(`${API_URL}/api/send-to-government`, {
+      const response = await fetch(`${API_URL}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          governmentEmail,
-          issueTitle: issue.title,
-          issueDescription: issue.description,
-          issueCategory: issue.category,
-          issueLocation: issue.location?.address || 'Not specified',
-          reportedBy: issue.userName || 'Anonymous',
-          upvotes: issue.upvotes || 0,
-          imageUrl: issue.photo,
-          issueId: issue.id
+          to: governmentEmail,
+          subject: `🚨 New Issue Reported: ${issue.issueTitle}`,
+          html,
         }),
       });
-      console.log("Email send response status:", response.status);
+      console.log("Email send response status:", response);
 
       const data = await response.json();
 
