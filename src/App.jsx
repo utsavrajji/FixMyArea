@@ -5,7 +5,8 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import ReportIssue from "./components/ReportIssue";
-import AdminDashboard from "./pages/AdminDashboard";
+import AdminDashboard from "./pages/Admindashboard";
+import IssueDetailPage from "./pages/IssueDetailPage";
 import AdminGate from "./pages/AdminGate";
 import ResolvedIssues from "./pages/ResolvedIssues";
 import LocalIssues from "./pages/LocalIssues";
@@ -24,6 +25,7 @@ function App() {
       <Route path="/issue/:id" element={<IssueDetail />} />
       {/* You can add <Route path="/admin" .../> in future */}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/issue/:id" element={<IssueDetailPage />} />
          <Route path="/admin" element={<AdminGate />} />
          <Route path="/history" element={<ResolvedIssues />} />
     </Routes>
