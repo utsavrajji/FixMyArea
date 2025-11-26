@@ -5,12 +5,12 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import ReportIssue from "./components/ReportIssue";
-import AdminDashboard from "./pages/Admindashboard"; // match actual file casing
 import IssueDetailPage from "./pages/IssueDetailPage";
 import AdminGate from "./pages/AdminGate";
 import ResolvedIssues from "./pages/ResolvedIssues";
 import LocalIssues from "./pages/LocalIssues";
 import IssueDetail from "./pages/IssueDetail";
+import AdminDashboard from "./pages/Admindashboard";
 
 function App() {
   return (
