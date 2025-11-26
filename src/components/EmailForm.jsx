@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API_URL =  'https://talkforguide.com/api/test-mail';
+const API_URL = 'http://localhost:3001/api/send-to-government'; // Use your deployed backend URL for production
 
 export default function EmailForm({ issue, onClose }) {
   const [governmentEmail, setGovernmentEmail] = useState(issue.responsibleEmail || "");
@@ -9,7 +9,6 @@ export default function EmailForm({ issue, onClose }) {
   const [error, setError] = useState("");
 
   const handleSend = async () => {
-    // Validation
     if (!governmentEmail || !governmentEmail.includes("@")) {
       setError("Please enter a valid government email address");
       return;
@@ -17,236 +16,31 @@ export default function EmailForm({ issue, onClose }) {
 
     setLoading(true);
     setError("");
-const html = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #f5f5f5;
-            padding: 20px;
-          }
-          .email-container { 
-            max-width: 700px; 
-            margin: 0 auto; 
-            background: #ffffff; 
-            border-radius: 16px; 
-            overflow: hidden; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1); 
-          }
-          .header { 
-            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%); 
-            padding: 40px 30px; 
-            text-align: center; 
-            color: white;
-          }
-          .logo { 
-            font-size: 36px; 
-            margin-bottom: 10px;
-          }
-          .header-title {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 8px;
-          }
-          .content { 
-            padding: 40px 30px; 
-          }
-          .alert-badge {
-            display: inline-block;
-            background: #ff4444;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 25px;
-          }
-          .issue-title {
-            font-size: 26px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 25px;
-            line-height: 1.3;
-          }
-          .info-section {
-            background: #f8f9fa;
-            border-left: 4px solid #FF6B35;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-          }
-          .info-row {
-            display: flex;
-            margin-bottom: 12px;
-          }
-          .info-label {
-            font-weight: bold;
-            color: #666;
-            min-width: 140px;
-            font-size: 14px;
-          }
-          .info-value {
-            color: #333;
-            font-size: 14px;
-            flex: 1;
-          }
-          .description-box {
-            background: #ffffff;
-            border: 2px solid #e0e0e0;
-            padding: 25px;
-            border-radius: 12px;
-            margin: 25px 0;
-          }
-          .description-text {
-            color: #555;
-            line-height: 1.7;
-            font-size: 15px;
-          }
-          .image-container {
-            margin: 25px 0;
-            text-align: center;
-          }
-          .issue-image {
-            max-width: 100%;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-          }
-          .stats-box {
-            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            margin: 25px 0;
-          }
-          .stats-number {
-            font-size: 48px;
-            font-weight: bold;
-            color: #FF6B35;
-          }
-          .cta-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
-            color: white;
-            padding: 16px 40px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 16px;
-            margin: 25px 0;
-          }
-          .action-required {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 25px 0;
-          }
-          .footer { 
-            background: #2c3e50; 
-            padding: 30px; 
-            text-align: center; 
-            color: white;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="email-container">
-          <div class="header">
-            <div class="logo">🏙️</div>
-            <div class="header-title">FixMyArea</div>
-            <p style="font-size: 14px; opacity: 0.95;">Citizen-Government Communication Portal</p>
-          </div>
 
-          <div class="content">
-            <div class="alert-badge">🚨 NEW ISSUE REPORTED</div>
-            
-            <div class="issue-title">${issue.issueTitle}</div>
+    // Prepare API payload as per backend expectation
+    const payload = {
+      governmentEmail, // field from input
+      issueTitle: issue.title,
+      issueDescription: issue.description,
+      issueCategory: issue.category,
+      issueLocation:
+        typeof issue.location === "object"
+          ? Object.values(issue.location).join(", ")
+          : (issue.location || ""),
+      reportedBy: issue.userName || "Anonymous",
+      upvotes: issue.upvotes || 0,
+      imageUrl: issue.imageUrl || "",
+      issueId: issue.id || "",
+    };
 
-            <div class="info-section">
-              <div class="info-row">
-                <span class="info-label">📂 Category:</span>
-                <span class="info-value">${issue.issueCategory || 'General Issue'}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">📍 Location:</span>
-                <span class="info-value">${issue.issueLocation || 'Location not specified'}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">👤 Reported By:</span>
-                <span class="info-value">${issue.reportedBy || 'Anonymous Citizen'}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">📅 Date:</span>
-                <span class="info-value">${new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-              </div>
-            </div>
+    // Debug: see payload structure in console
+    console.log("API payload sending:", payload);
 
-            ${issue.upvotes ? `
-              <div class="stats-box">
-                <div class="stats-number">👍 ${issue.upvotes}</div>
-                <p style="margin-top: 8px; font-size: 14px; color: #666;">Community Members Support This Issue</p>
-              </div>
-            ` : ''}
-
-            <div class="description-box">
-              <p style="font-weight: bold; color: #FF6B35; margin-bottom: 15px;">📝 Detailed Description</p>
-              <div class="description-text">${issue.issueDescription || 'No detailed description provided.'}</div>
-            </div>
-
-            ${issue.imageUrl ? `
-              <div class="image-container">
-                <p style="font-weight: bold; color: #FF6B35; margin-bottom: 15px;">📸 Visual Evidence</p>
-                <img src="${issue.imageUrl}" alt="Issue Evidence" class="issue-image" />
-              </div>
-            ` : ''}
-
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="https://fix-my-area-seven.vercel.app/issue/${issue.issueId || ''}" class="cta-button">
-                🔍 View Full Issue Details
-              </a>
-            </div>
-
-            <div class="action-required">
-              <p style="font-weight: bold; color: #856404; margin-bottom: 10px;">⚠️ Government Action Required</p>
-              <p style="color: #856404; font-size: 14px; line-height: 1.6;">
-                This issue has been officially reported through FixMyArea. Please:
-              </p>
-              <ul style="margin: 12px 0 0 20px; line-height: 1.8; color: #856404;">
-                <li>Acknowledge receipt within 48 hours</li>
-                <li>Conduct site inspection</li>
-                <li>Provide resolution timeline</li>
-                <li>Update status regularly</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="footer">
-            <p style="font-size: 16px; font-weight: bold; margin-bottom: 12px;">🏛️ Official Government Communication</p>
-            <p style="font-size: 13px; opacity: 0.9; margin-bottom: 20px;">
-              Sent from FixMyArea citizen engagement platform
-            </p>
-            <p style="font-size: 11px; opacity: 0.7; margin-top: 20px;">
-              © 2025 FixMyArea | Empowering Communities
-            </p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
     try {
-      const response = await fetch(`${API_URL}`, {
+      const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: governmentEmail,
-          subject: `🚨 New Issue Reported: ${issue.issueTitle}`,
-          html,
-        }),
+        body: JSON.stringify(payload),
       });
       console.log("Email send response status:", response);
 
@@ -254,9 +48,7 @@ const html = `
 
       if (data.success) {
         setSuccess(true);
-        setTimeout(() => {
-          onClose();
-        }, 2000);
+        setTimeout(onClose, 2000);
       } else {
         setError(data.message || "Failed to send email");
       }
@@ -302,7 +94,6 @@ const html = `
               </div>
             </div>
           )}
-
           {/* Error Message */}
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3">
@@ -332,7 +123,9 @@ const html = `
               <div className="bg-white rounded-lg p-3 border border-orange-100">
                 <p className="text-xs text-gray-500 mb-1">Location</p>
                 <p className="font-semibold text-gray-800 text-sm truncate">
-                  {Object.values(issue.location || {}).join(", ") || "Not specified"}
+                  {typeof issue.location === "object"
+                    ? Object.values(issue.location).join(", ")
+                    : (issue.location || "Not specified")}
                 </p>
               </div>
               <div className="bg-white rounded-lg p-3 border border-orange-100">
@@ -363,23 +156,8 @@ const html = `
             />
             <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
               <span>ℹ️</span>
-              <span>Email will be sent from fixmyareas@gmail.com with full issue details</span>
+              <span>Email will be sent from your admin Brevo mail.</span>
             </p>
-          </div>
-
-          {/* Email Preview Info */}
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-            <p className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
-              <span>📨</span>
-              <span>What will be sent:</span>
-            </p>
-            <ul className="text-sm text-blue-700 space-y-1 ml-6 list-disc">
-              <li>Complete issue details with all information</li>
-              <li>Community upvote statistics</li>
-              <li>Photo evidence (if available)</li>
-              <li>Direct link to view issue on portal</li>
-              <li>Action required notice for government</li>
-            </ul>
           </div>
         </div>
 
@@ -399,10 +177,11 @@ const html = `
           >
             {loading ? (
               <>
-                <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
+               <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+  ircle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /
+  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+</svg>
+
                 <span>Sending...</span>
               </>
             ) : success ? (
@@ -420,7 +199,7 @@ const html = `
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fade-in {
           from { opacity: 0; }
           to { opacity: 1; }
@@ -434,15 +213,9 @@ const html = `
           50% { transform: scale(1.05); }
           100% { transform: scale(1); opacity: 1; }
         }
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out;
-        }
-        .animate-slide-up {
-          animation: slide-up 0.4s ease-out;
-        }
-        .animate-bounce-in {
-          animation: bounce-in 0.5s ease-out;
-        }
+        .animate-fade-in { animation: fade-in 0.3s ease-out; }
+        .animate-slide-up { animation: slide-up 0.4s ease-out; }
+        .animate-bounce-in { animation: bounce-in 0.5s ease-out; }
         .line-clamp-2 {
           display: -webkit-box;
           -webkit-line-clamp: 2;
