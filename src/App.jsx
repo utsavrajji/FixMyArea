@@ -10,7 +10,7 @@ import AdminGate from "./pages/AdminGate";
 import ResolvedIssues from "./pages/ResolvedIssues";
 import LocalIssues from "./pages/LocalIssues";
 import IssueDetail from "./pages/IssueDetail";
-import AdminDashboard from "./pages/Admindashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   return (
