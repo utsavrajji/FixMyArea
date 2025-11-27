@@ -25,6 +25,30 @@ export default function ReportIssue() {
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
+  // Predefined categories list
+  const predefinedCategories = [
+    "Road & Infrastructure",
+    "Garbage & Cleanliness",
+    "Water Supply",
+    "Electricity",
+    "Environment & Parks",
+    "Traffic & Transport",
+    "Safety & Security",
+    "Public Buildings & Facilities",
+    "Housing Area Problems",
+    "Accessibility for Disabled",
+    "Drainage & Sewage",
+    "Public Utilities",
+    "Emergency / Urgent Issues",
+    "Community & Social Issues",
+    "Government Services"
+  ];
+
+  // Helper function to check if category is custom
+  const isCustomCategory = (cat) => {
+    return cat && !predefinedCategories.includes(cat);
+  };
+
   // Photo Upload Handlers
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -79,20 +103,46 @@ export default function ReportIssue() {
     setPreview(null);
   };
 
-  // Validation
+  // FIXED Validation
   const validate = () => {
-    if (!category || !subIssue || !description.trim()) {
-      setError("Please fill in all required fields");
+    console.log("=== VALIDATION START ===");
+    console.log("Category:", category);
+    console.log("SubIssue:", subIssue);
+    console.log("Is Custom Category:", isCustomCategory(category));
+    
+    // 1. Check category
+    if (!category || category.trim() === "" || category === "Other") {
+      setError("Please enter a category name");
       return false;
     }
+    
+    // 2. Check subIssue - ONLY if NOT custom category
+    if (!isCustomCategory(category)) {
+      if (!subIssue || subIssue.trim() === "" || subIssue === "Other") {
+        setError("Please enter a specific issue type");
+        return false;
+      }
+    }
+    
+    // 3. Check description
+    if (!description || description.trim() === "") {
+      setError("Please describe the issue");
+      return false;
+    }
+    
+    // 4. Check location
     if (!location.state || !location.district || !location.pinCode) {
       setError("Location details are required");
       return false;
     }
+    
+    // 5. Check photo
     if (!photo) {
       setError("Please attach a photo of the issue");
       return false;
     }
+    
+    console.log("=== VALIDATION PASSED ===");
     setError("");
     return true;
   };
@@ -100,7 +150,11 @@ export default function ReportIssue() {
   // Form Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
+    
+    if (!validate()) {
+      return;
+    }
+    
     setLoading(true);
     setError("");
 
@@ -115,12 +169,17 @@ export default function ReportIssue() {
     try {
       const { url: photoURL, publicId } = await uploadToCloudinary(photo, "issues");
 
+      // Create title based on category type
+      const issueTitle = isCustomCategory(category)
+        ? category
+        : `${category} - ${subIssue}`;
+
       await addDoc(collection(db, "issues"), {
         userId: user.uid,
         createdBy: user.uid,
-        title: `${category} - ${subIssue}`,
+        title: issueTitle,
         category,
-        subIssue,
+        subIssue: subIssue || "Not specified",
         description: description.trim(),
         location,
         locationCoords,
@@ -170,7 +229,7 @@ export default function ReportIssue() {
                 </div>
                 <div className="flex-1 h-1 bg-white/30 mx-2" />
                 <div className="flex items-center gap-2">
-                  <span className={`w-8 h-8 rounded-full flex items-center justify-center ${subIssue ? 'bg-white text-orange-500' : 'bg-white/30'}`}>2</span>
+                  <span className={`w-8 h-8 rounded-full flex items-center justify-center ${subIssue || isCustomCategory(category) ? 'bg-white text-orange-500' : 'bg-white/30'}`}>2</span>
                   <span className="hidden sm:inline">Details</span>
                 </div>
                 <div className="flex-1 h-1 bg-white/30 mx-2" />
@@ -225,7 +284,7 @@ export default function ReportIssue() {
                   <div className="flex items-center gap-2">
                     <span className="text-2xl">🔍</span>
                     <label className="text-lg font-bold text-gray-800">Specific Issue Type</label>
-                    <span className="text-red-500">*</span>
+                    {!isCustomCategory(category) && <span className="text-red-500">*</span>}
                   </div>
                   <SubIssueSelector category={category} subIssue={subIssue} setSubIssue={setSubIssue} />
                 </div>
@@ -268,7 +327,7 @@ export default function ReportIssue() {
                 </div>
               </div>
 
-              {/* Section 5: Photo Upload - UPDATED */}
+              {/* Section 5: Photo Upload */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">📸</span>
