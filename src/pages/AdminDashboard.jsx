@@ -2,19 +2,19 @@ import { useEffect, useState } from "react";
 import { db } from "../firebase/config";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import Analytics from "../components/Analytics";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 
 const STATUS = [
-  "All", "Pending", "Under Review", "Not Important", "Fake", 
+  "All", "Pending", "Under Review", "Not Important", "Fake",
   "In Progress", "Resolved", "Rejected"
 ];
 
 const CATEGORIES = [
-  "All", "Road & Infrastructure", "Garbage & Cleanliness", "Water Supply", 
-  "Electricity", "Environment & Parks", "Traffic & Transport", "Safety & Security", 
-  "Public Buildings & Facilities", "Housing Area Problems", "Accessibility for Disabled", 
-  "Drainage & Sewage", "Public Utilities", "Emergency / Urgent Issues", 
+  "All", "Road & Infrastructure", "Garbage & Cleanliness", "Water Supply",
+  "Electricity", "Environment & Parks", "Traffic & Transport", "Safety & Security",
+  "Public Buildings & Facilities", "Housing Area Problems", "Accessibility for Disabled",
+  "Drainage & Sewage", "Public Utilities", "Emergency / Urgent Issues",
   "Community & Social Issues", "Government Services"
 ];
 
@@ -111,9 +111,8 @@ export default function AdminDashboard() {
 
         {/* Sidebar */}
         <aside
-          className={`fixed lg:static inset-y-0 left-0 z-40 w-72 lg:w-80 bg-gradient-to-b from-white via-orange-50/30 to-white shadow-2xl border-r border-orange-100 min-h-screen flex flex-col transition-transform duration-300 ease-in-out ${
-            sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-          }`}
+          className={`fixed lg:static inset-y-0 left-0 z-40 w-72 lg:w-80 bg-gradient-to-b from-white via-orange-50/30 to-white shadow-2xl border-r border-orange-100 min-h-screen flex flex-col transition-transform duration-300 ease-in-out ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+            }`}
         >
           <div className="p-6 border-b border-orange-100 bg-gradient-to-r from-orange-500 to-orange-600">
             <div className="flex items-center gap-3">
@@ -134,7 +133,7 @@ export default function AdminDashboard() {
             </div>
             {STATUS.map(s => {
               const isActive = status === s;
-              
+
               // Define proper button styles based on status
               const buttonStyles = {
                 "All": isActive ? "bg-blue-500 text-white" : "bg-blue-50 text-blue-700 hover:bg-blue-100",
@@ -146,7 +145,7 @@ export default function AdminDashboard() {
                 "Resolved": isActive ? "bg-green-500 text-white" : "bg-green-50 text-green-700 hover:bg-green-100",
                 "Rejected": isActive ? "bg-red-500 text-white" : "bg-red-50 text-red-700 hover:bg-red-100"
               };
-              
+
               return (
                 <button
                   key={s}
@@ -281,7 +280,7 @@ export default function AdminDashboard() {
                         <span className="text-6xl opacity-30">📋</span>
                       </div>
                     )}
-                    
+
                     <div className="absolute top-3 right-3">
                       <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg ${getStatusBadgeColor(issue.status)}`}>
                         {issue.status}
@@ -313,14 +312,15 @@ export default function AdminDashboard() {
                         <span className="font-semibold">{issue.upvotes || 0}</span>
                       </div>
                     </div>
+                    <Link to={`/admin/issue/${issue.id}`}>
 
-                    <button
-                      onClick={() => navigate(`/admin/issue/${issue.id}`)}
-                      className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center justify-center gap-2"
-                    >
-                      <span>👁️</span>
-                      <span>View Details</span>
-                    </button>
+                      <button
+                        className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center justify-center gap-2"
+                      >
+                        <span>👁️</span>
+                        <span>View Details</span>
+                      </button>
+                    </Link>
                   </div>
                 </div>
               ))}
