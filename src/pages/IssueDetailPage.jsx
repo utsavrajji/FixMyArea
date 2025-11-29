@@ -16,28 +16,35 @@ export default function IssueDetailPage() {
   const [issue, setIssue] = useState(null);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true); // ✅ NEW: Separate auth loading
   const [updating, setUpdating] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Check authentication - FIXED: Set currentUser properly
+  // ✅ STEP 1: Check authentication first
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         navigate("/admin");
       } else {
-        setCurrentUser(user); // ✅ This sets currentUser
+        setCurrentUser(user);
+        setAuthLoading(false); // ✅ Auth check complete
         console.log("✅ Admin authenticated:", user.email);
       }
     });
     return () => unsubscribe();
   }, [navigate]);
 
-  // Fetch issue and user data
+  // ✅ STEP 2: Fetch data only after auth is complete
   useEffect(() => {
+    // Don't fetch if auth is still loading
+    if (authLoading) return;
+
     const fetchIssueAndUser = async () => {
       try {
+        setLoading(true);
+        
         // Fetch issue data
         const issueRef = doc(db, "issues", id);
         const issueSnap = await getDoc(issueRef);
@@ -70,10 +77,8 @@ export default function IssueDetailPage() {
       }
     };
 
-    if (currentUser) {
-      fetchIssueAndUser();
-    }
-  }, [id, navigate, currentUser]);
+    fetchIssueAndUser();
+  }, [id, navigate, authLoading]); // ✅ Depends on authLoading
 
   const handleStatusUpdate = async (newStatus) => {
     if (!currentUser) {
@@ -130,12 +135,15 @@ export default function IssueDetailPage() {
     return colors[status] || "bg-gray-100 text-gray-800";
   };
 
-  if (loading) {
+  // ✅ Show loading while auth or data is loading
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-500 font-medium">Loading issue details...</p>
+          <p className="text-gray-500 font-medium">
+            {authLoading ? "Authenticating..." : "Loading issue details..."}
+          </p>
         </div>
       </div>
     );
@@ -340,7 +348,7 @@ export default function IssueDetailPage() {
                 {STATUS_OPTIONS.map(s => (
                   <button
                     key={s}
-                    disabled={updating || issue.status === s || !currentUser}
+                    disabled={updating || issue.status === s}
                     onClick={() => handleStatusUpdate(s)}
                     className={`px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${
                       issue.status === s
