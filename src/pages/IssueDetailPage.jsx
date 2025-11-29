@@ -14,24 +14,27 @@ export default function IssueDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [issue, setIssue] = useState(null);
-  const [userData, setUserData] = useState(null); // NEW: User data state
+  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
-//   const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
-  // Check authentication
-//   useEffect(() => {
-//     const unsubscribe = onAuthStateChanged(auth, (user) => {
-//       setCurrentUser(user);
-//       if (!user) {
-//         navigate("/admin");
-//       }
-//     });
-//     return () => unsubscribe();
-//   }, [navigate]);
+  // Check authentication - FIXED: Set currentUser properly
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        navigate("/admin");
+      } else {
+        setCurrentUser(user); // ✅ This sets currentUser
+        console.log("✅ Admin authenticated:", user.email);
+      }
+    });
+    return () => unsubscribe();
+  }, [navigate]);
 
+  // Fetch issue and user data
   useEffect(() => {
     const fetchIssueAndUser = async () => {
       try {
@@ -66,11 +69,11 @@ export default function IssueDetailPage() {
         setLoading(false);
       }
     };
-fetchIssueAndUser();
-    // if (currentUser) {
-    //   
-    // }
-  }, [id, navigate]);
+
+    if (currentUser) {
+      fetchIssueAndUser();
+    }
+  }, [id, navigate, currentUser]);
 
   const handleStatusUpdate = async (newStatus) => {
     if (!currentUser) {
@@ -114,19 +117,6 @@ fetchIssueAndUser();
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-500 font-medium">Loading issue details...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!issue) return null;
-
   const getStatusBadgeColor = (status) => {
     const colors = {
       Pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
@@ -140,16 +130,31 @@ fetchIssueAndUser();
     return colors[status] || "bg-gray-100 text-gray-800";
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-500 font-medium">Loading issue details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!issue) return null;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 py-8 px-4">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className="mb-6 flex items-center gap-4">
+        <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <button
             onClick={() => navigate("/admin-dashboard")}
-            className="px-4 py-2 bg-white border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-300 flex items-center gap-2 font-medium text-gray-700"
+            className="px-4 py-2 bg-white border-2 border-gray-200 rounded-xl hover:bg-gray-50 hover:border-orange-500 transition-all duration-300 flex items-center gap-2 font-medium text-gray-700"
           >
-            <span>←</span>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
             <span>Back to Dashboard</span>
           </button>
           <div className="flex-1" />
@@ -185,12 +190,12 @@ fetchIssueAndUser();
           )}
 
           {/* Content */}
-          <div className="p-8 space-y-6">
+          <div className="p-6 md:p-8 space-y-6">
             {/* Title & Status */}
             <div>
               <div className="flex items-start justify-between gap-4 mb-3">
-                <h1 className="text-3xl font-bold text-gray-800 flex-1">{issue.title}</h1>
-                <span className={`px-4 py-2 rounded-xl border-2 font-semibold text-sm ${getStatusBadgeColor(issue.status)}`}>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex-1">{issue.title}</h1>
+                <span className={`px-4 py-2 rounded-xl border-2 font-semibold text-sm whitespace-nowrap ${getStatusBadgeColor(issue.status)}`}>
                   {issue.status}
                 </span>
               </div>
@@ -199,26 +204,36 @@ fetchIssueAndUser();
 
             {/* Meta Info Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-xl p-4">
-                <div className="text-sm text-gray-500 mb-1">📂 Category</div>
+              <div className="bg-gradient-to-br from-blue-50 to-white border-2 border-blue-100 rounded-xl p-4">
+                <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                  <span>📂</span>
+                  <span>Category</span>
+                </div>
                 <div className="font-semibold text-gray-800">{issue.category}</div>
               </div>
-              <div className="bg-gradient-to-br from-purple-50 to-white border border-purple-100 rounded-xl p-4">
-                <div className="text-sm text-gray-500 mb-1">📍 Location</div>
-                <div className="font-semibold text-gray-800">
+              <div className="bg-gradient-to-br from-purple-50 to-white border-2 border-purple-100 rounded-xl p-4">
+                <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                  <span>🔍</span>
+                  <span>Sub Issue</span>
+                </div>
+                <div className="font-semibold text-gray-800">{issue.subIssue || "Not specified"}</div>
+              </div>
+              <div className="bg-gradient-to-br from-green-50 to-white border-2 border-green-100 rounded-xl p-4">
+                <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                  <span>📍</span>
+                  <span>Location</span>
+                </div>
+                <div className="font-semibold text-gray-800 text-sm">
                   {typeof issue.location === "object" 
-                    ? Object.values(issue.location).join(", ") 
+                    ? Object.values(issue.location).filter(Boolean).join(", ") 
                     : (issue.location || "Not specified")}
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-green-50 to-white border border-green-100 rounded-xl p-4">
-                <div className="text-sm text-gray-500 mb-1">👤 Reported By</div>
-                <div className="font-semibold text-gray-800">
-                  {userData?.displayName || userData?.name || userData?.email || "Anonymous"}
+              <div className="bg-gradient-to-br from-orange-50 to-white border-2 border-orange-100 rounded-xl p-4">
+                <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                  <span>👍</span>
+                  <span>Community Support</span>
                 </div>
-              </div>
-              <div className="bg-gradient-to-br from-orange-50 to-white border border-orange-100 rounded-xl p-4">
-                <div className="text-sm text-gray-500 mb-1">👍 Community Support</div>
                 <div className="font-semibold text-gray-800">{issue.upvotes || 0} upvotes</div>
               </div>
             </div>
@@ -240,7 +255,7 @@ fetchIssueAndUser();
                     <div>
                       <div className="text-xs text-gray-500 mb-1">Full Name</div>
                       <div className="font-semibold text-gray-800">
-                        {userData.displayName || userData.name || userData.email || "Anonymous User"}
+                        {userData.displayName || userData.name || "Anonymous User"}
                       </div>
                     </div>
                   </div>
@@ -250,9 +265,9 @@ fetchIssueAndUser();
                     <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
                       <span className="text-lg">📧</span>
                     </div>
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <div className="text-xs text-gray-500 mb-1">Email Address</div>
-                      <div className="font-semibold text-gray-800 break-all">
+                      <div className="font-semibold text-gray-800 break-all text-sm">
                         {userData.email || "Not provided"}
                       </div>
                     </div>
@@ -276,10 +291,10 @@ fetchIssueAndUser();
                     <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
                       <span className="text-lg">🆔</span>
                     </div>
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <div className="text-xs text-gray-500 mb-1">User ID</div>
                       <div className="font-mono text-xs text-gray-600 break-all">
-                        {issue.userId || userData.uid}
+                        {issue.userId}
                       </div>
                     </div>
                   </div>
@@ -316,18 +331,21 @@ fetchIssueAndUser();
             </div>
 
             {/* Status Update Section */}
-            <div className="border-t border-gray-200 pt-6 space-y-4">
-              <div className="text-sm font-semibold text-gray-700 mb-3">Update Status:</div>
+            <div className="border-t-2 border-gray-200 pt-6 space-y-4">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xl">🔄</span>
+                <div className="text-sm font-semibold text-gray-700">Update Status:</div>
+              </div>
               <div className="flex flex-wrap gap-2">
                 {STATUS_OPTIONS.map(s => (
                   <button
                     key={s}
-                    disabled={updating || issue.status === s}
+                    disabled={updating || issue.status === s || !currentUser}
                     onClick={() => handleStatusUpdate(s)}
                     className={`px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${
                       issue.status === s
                         ? "bg-orange-500 text-white shadow-lg cursor-default"
-                        : "bg-gray-100 text-gray-700 hover:bg-orange-100 hover:text-orange-700 hover:scale-105 disabled:opacity-50"
+                        : "bg-gray-100 text-gray-700 hover:bg-orange-100 hover:text-orange-700 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                     }`}
                   >
                     {s}
@@ -337,7 +355,7 @@ fetchIssueAndUser();
 
               {/* Delete Button */}
               {(issue.status === "Fake" || issue.status === "Not Important") && (
-                <div className="pt-4 border-t border-red-100">
+                <div className="pt-4 border-t-2 border-red-100">
                   <button
                     onClick={handleDelete}
                     disabled={updating}
@@ -374,7 +392,7 @@ fetchIssueAndUser();
         >
           <button
             onClick={() => setShowImageModal(false)}
-            className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white p-3 rounded-full transition-all duration-300"
+            className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white p-3 rounded-full transition-all duration-300 z-10"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -388,7 +406,7 @@ fetchIssueAndUser();
               onClick={(e) => e.stopPropagation()}
             />
           </div>
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-md text-white px-6 py-3 rounded-xl">
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-md text-white px-6 py-3 rounded-xl text-sm">
             Click outside or press ESC to close
           </div>
         </div>
