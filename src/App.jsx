@@ -11,6 +11,8 @@ import ResolvedIssues from "./pages/ResolvedIssues";
 import LocalIssues from "./pages/LocalIssues";
 import IssueDetail from "./pages/IssueDetail";
 import AdminDashboard from "./pages/AdminDashboard";
+import ContactUs from "./pages/ContactUs";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
       <Route path="/admin/issue/:id" element={<IssueDetailPage />} />
       <Route path="/admin" element={<AdminGate />} />
       <Route path="/history" element={<ResolvedIssues />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/contact" element={<ContactUs />} />
     </Routes>
   );
 }

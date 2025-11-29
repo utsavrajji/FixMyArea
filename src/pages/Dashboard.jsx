@@ -43,7 +43,7 @@ export default function Dashboard() {
               <nav className="hidden lg:flex items-center gap-2 xl:gap-4 2xl:gap-6">
                 <NavItem icon="👤" label="Profile" onClick={() => navigate("/profile")} />
                 <NavItem icon="📋" label="My Issues" onClick={() => window.scrollTo({ top: 600, behavior: 'smooth' })} />
-                <NavItem icon="⚙️" label="Settings" onClick={() => navigate("/settings")} />
+            
                 <NavItem icon="📞" label="Contact" onClick={() => navigate("/contact")} />
                 <button
                   onClick={handleLogout}
@@ -126,15 +126,7 @@ export default function Dashboard() {
                     navigate("/history");
                   }}
                 />
-                <div className="border-t border-gray-200 my-2" />
-                <MenuItem
-                  icon="⚙️"
-                  label="Settings"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    navigate("/settings");
-                  }}
-                />
+                
                 <MenuItem
                   icon="📞"
                   label="Contact Us"
