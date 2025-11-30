@@ -16,23 +16,28 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 
-// USE THIS Nodemailer transporter for Brevo
+// ✅ FIX: Use port 2525 instead of 587 for Render compatibility
 const transporter = nodemailer.createTransport({
   host: 'smtp-relay.brevo.com',
-  port: 587,
+  port: 2525, // ← Changed from 587 to 2525
   secure: false,
   auth: {
     user: process.env.BREVO_USER,
     pass: process.env.BREVO_PASS
   },
-  tls: { rejectUnauthorized: false }
+  tls: { 
+    rejectUnauthorized: false 
+  },
+  connectionTimeout: 10000, // ✅ 10 second timeout
+  greetingTimeout: 10000,
+  socketTimeout: 10000
 });
 
 transporter.verify(function (error, success) {
   if (error) {
-    console.log("Brevo SMTP error:", error);
+    console.log("❌ Brevo SMTP error:", error);
   } else {
-    console.log("Brevo SMTP is ready to send mails.");
+    console.log("✅ Brevo SMTP is ready to send mails.");
   }
 });
 
@@ -50,6 +55,8 @@ app.post("/api/send-to-government", async (req, res) => {
     issueId
   } = req.body;
 
+  console.log("📧 Received request:", { governmentEmail, issueTitle });
+
   if (!governmentEmail || !issueTitle) {
     return res.status(400).json({
       success: false,
@@ -58,10 +65,10 @@ app.post("/api/send-to-government", async (req, res) => {
   }
 
   const mailOptions = {
-  from: `"FixMyArea" <fixmyareas@gmail.com>`, // ya .env se process.env.BREVO_FROM
-  to: governmentEmail,
-  subject: `🚨 Community Issue Report: ${issueTitle}`,
-  html: `
+    from: `"FixMyArea" <fixmyareas@gmail.com>`,
+    to: governmentEmail,
+    subject: `🚨 Community Issue Report: ${issueTitle}`,
+    html: `
       <div style="font-family:'Segoe UI',Arial,sans-serif;background:#f7faff;padding:26px 0;">
         <div style="max-width:600px;background:#fff;border-radius:16px;box-shadow:0 3px 18px #e0e6eb;margin:0 auto;padding:36px 28px;">
           <div style="background:#5bc0ee;color:#fff;font-size:22px;font-weight:700;letter-spacing:2.5px;border-radius:8px 8px 0 0;padding:20px 0 14px;">
@@ -88,16 +95,31 @@ app.post("/api/send-to-government", async (req, res) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    console.log("📤 Attempting to send email to:", governmentEmail);
+    const info = await transporter.sendMail(mailOptions);
+    console.log("✅ Email sent successfully:", info.messageId);
     res.json({ success: true, message: "Email sent successfully to government!" });
   } catch (err) {
-    res.status(500).json({ success: false, message: "Mail send failed", error: err.message });
+    console.error("❌ Email send failed:");
+    console.error("Error code:", err.code);
+    console.error("Error message:", err.message);
+    
+    res.status(500).json({ 
+      success: false, 
+      message: "Mail send failed", 
+      error: err.message,
+      code: err.code
+    });
   }
 });
 
 app.get("/", (req, res) => {
-  res.json({ status: "FixMyArea Brevo Mail Server OK", time: new Date().toISOString() });
+  res.json({ 
+    status: "✅ FixMyArea Backend Running with Brevo", 
+    time: new Date().toISOString(),
+    smtp: "Port 2525"
+  });
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log("Backend online at port", PORT));
+app.listen(PORT, () => console.log("🚀 Backend online at port", PORT));
