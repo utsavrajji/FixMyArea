@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API_URL = 'https://fixmyarea.onrender.com/api/send-to-government';
+const API_URL = 'http://localhost:3001/api/send-to-government'; // Use your deployed backend URL for production
 export default function EmailForm({ issue, onClose }) {
   const [governmentEmail, setGovernmentEmail] = useState(issue.responsibleEmail || "");
   const [loading, setLoading] = useState(false);

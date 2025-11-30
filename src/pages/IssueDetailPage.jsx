@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
-import { db, auth } from "../firebase/config";
-import { onAuthStateChanged } from "firebase/auth";
+import { db } from "../firebase/config";
 import EmailForm from "../components/EmailForm";
 
 const STATUS_OPTIONS = [
-  "Pending", "Under Review", "Not Important", "Fake", 
-  "In Progress", "Resolved", "Rejected"
+  "Pending",
+  "Under Review",
+  "Not Important",
+  "Fake",
+  "In Progress",
+  "Resolved",
+  "Rejected",
 ];
 
 export default function IssueDetailPage() {
@@ -16,48 +20,27 @@ export default function IssueDetailPage() {
   const [issue, setIssue] = useState(null);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [authLoading, setAuthLoading] = useState(true); // ✅ NEW: Separate auth loading
   const [updating, setUpdating] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
 
-  // ✅ STEP 1: Check authentication first
+  // STEP 1: Fetch issue + user data (no auth)
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        navigate("/admin");
-      } else {
-        setCurrentUser(user);
-        setAuthLoading(false); // ✅ Auth check complete
-        console.log("✅ Admin authenticated:", user.email);
-      }
-    });
-    return () => unsubscribe();
-  }, [navigate]);
-
-  // ✅ STEP 2: Fetch data only after auth is complete
-  useEffect(() => {
-    // Don't fetch if auth is still loading
-    if (authLoading) return;
-
     const fetchIssueAndUser = async () => {
       try {
         setLoading(true);
-        
-        // Fetch issue data
+
         const issueRef = doc(db, "issues", id);
         const issueSnap = await getDoc(issueRef);
-        
+
         if (issueSnap.exists()) {
           const issueData = { id: issueSnap.id, ...issueSnap.data() };
           setIssue(issueData);
 
-          // Fetch user data if userId exists
           if (issueData.userId) {
             const userRef = doc(db, "users", issueData.userId);
             const userSnap = await getDoc(userRef);
-            
+
             if (userSnap.exists()) {
               setUserData(userSnap.data());
               console.log("✅ User data fetched:", userSnap.data());
@@ -78,21 +61,16 @@ export default function IssueDetailPage() {
     };
 
     fetchIssueAndUser();
-  }, [id, navigate, authLoading]); // ✅ Depends on authLoading
+  }, [id, navigate]);
 
+  // Status update – no auth check
   const handleStatusUpdate = async (newStatus) => {
-    if (!currentUser) {
-      alert("You must be logged in to update status");
-      return;
-    }
-
     setUpdating(true);
     try {
       const docRef = doc(db, "issues", id);
-      await updateDoc(docRef, { 
+      await updateDoc(docRef, {
         status: newStatus,
         updatedAt: new Date(),
-        updatedBy: currentUser.email
       });
       setIssue({ ...issue, status: newStatus });
       alert("✅ Status updated successfully!");
@@ -104,8 +82,13 @@ export default function IssueDetailPage() {
     }
   };
 
+  // Delete issue – no auth check
   const handleDelete = async () => {
-    if (!window.confirm("⚠️ Are you sure you want to DELETE this issue permanently?\n\nThis action CANNOT be undone!")) {
+    if (
+      !window.confirm(
+        "⚠️ Are you sure you want to DELETE this issue permanently?\n\nThis action CANNOT be undone!"
+      )
+    ) {
       return;
     }
 
@@ -130,20 +113,18 @@ export default function IssueDetailPage() {
       Resolved: "bg-green-100 text-green-800 border-green-200",
       Rejected: "bg-red-100 text-red-800 border-red-200",
       Fake: "bg-gray-100 text-gray-800 border-gray-200",
-      "Not Important": "bg-gray-100 text-gray-600 border-gray-200"
+      "Not Important": "bg-gray-100 text-gray-600 border-gray-200",
     };
     return colors[status] || "bg-gray-100 text-gray-800";
   };
 
-  // ✅ Show loading while auth or data is loading
-  if (authLoading || loading) {
+  // Loading state
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-500 font-medium">
-            {authLoading ? "Authenticating..." : "Loading issue details..."}
-          </p>
+          <p className="text-gray-500 font-medium">Loading issue details...</p>
         </div>
       </div>
     );
@@ -159,6 +140,7 @@ export default function IssueDetailPage() {
           <button
             onClick={() => navigate("/admin-dashboard")}
             className="px-4 py-2 bg-white border-2 border-gray-200 rounded-xl hover:bg-gray-50 hover:border-orange-500 transition-all duration-300 flex items-center gap-2 font-medium text-gray-700"
+
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
