@@ -23,23 +23,23 @@ export default function IssueDetailPage() {
   const [currentUser, setCurrentUser] = useState(null);
 
   // ✅ STEP 1: Check authentication first
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        navigate("/admin");
-      } else {
-        setCurrentUser(user);
-        setAuthLoading(false); // ✅ Auth check complete
-        console.log("✅ Admin authenticated:", user.email);
-      }
-    });
-    return () => unsubscribe();
-  }, [navigate]);
+//   useEffect(() => {
+//     const unsubscribe = onAuthStateChanged(auth, (user) => {
+//       if (!user) {
+//         navigate("/admin");
+//       } else {
+//         setCurrentUser(user);
+//         setAuthLoading(false); // ✅ Auth check complete
+//         console.log("✅ Admin authenticated:", user.email);
+//       }
+//     });
+//     return () => unsubscribe();
+//   }, [navigate]);
 
   // ✅ STEP 2: Fetch data only after auth is complete
   useEffect(() => {
     // Don't fetch if auth is still loading
-    if (authLoading) return;
+    // if (authLoading) return;
 
     const fetchIssueAndUser = async () => {
       try {
