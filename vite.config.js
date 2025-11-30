@@ -20,8 +20,8 @@ export default defineConfig({
     rollupOptions: {},
   },
 
-  // ✅ Local aur Vercel dono ke liye sahi base
-  base: './',
+  // ✅ FIX: Vercel ke liye '/' use karo
+  base: '/',
 
   server: {
     port: 3000,
