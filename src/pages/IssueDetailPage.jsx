@@ -136,18 +136,18 @@ export default function IssueDetailPage() {
   };
 
   // ✅ Show loading while auth or data is loading
-  if (authLoading || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-500 font-medium">
-            {authLoading ? "Authenticating..." : "Loading issue details..."}
-          </p>
-        </div>
-      </div>
-    );
-  }
+//   if (authLoading || loading) {
+//     return (
+//       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50">
+//         <div className="text-center">
+//           <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+//           <p className="text-gray-500 font-medium">
+//             {authLoading ? "Authenticating..." : "Loading issue details..."}
+//           </p>
+//         </div>
+//       </div>
+//     );
+//   }
 
   if (!issue) return null;
 
