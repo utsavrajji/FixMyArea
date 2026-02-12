@@ -59,7 +59,8 @@ function Register() {
     setGeneratedOtp(otp);
 
     try {
-      const response = await fetch('http://localhost:3001/api/send-otp', {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const response = await fetch(`${API_URL}/api/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

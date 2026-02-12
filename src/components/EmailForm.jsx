@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API_URL = 'http://localhost:3001/api/send-to-government'; // Use your deployed backend URL for production
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 export default function EmailForm({ issue, onClose }) {
   const [governmentEmail, setGovernmentEmail] = useState(issue.responsibleEmail || "");
   const [loading, setLoading] = useState(false);
@@ -36,7 +36,7 @@ export default function EmailForm({ issue, onClose }) {
     console.log("API payload sending:", payload);
 
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(`${API_URL}/api/send-to-government`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
