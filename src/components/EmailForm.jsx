@@ -155,7 +155,7 @@ export default function EmailForm({ issue, onClose }) {
             />
             <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
               <span>ℹ️</span>
-              <span>Email will be sent from utsavraj2004u@gmail.com</span>
+              <span>Email will be sent from fixmyareas@gmail.com</span>
             </p>
           </div>
         </div>

@@ -17,20 +17,22 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 
-// Nodemailer configuration for Gmail
+// Nodemailer configuration using Brevo (more reliable for cloud hosting)
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp-relay.brevo.com',
+  port: 587,
+  secure: false, // use TLS
   auth: {
-    user: 'utsavraj2004u@gmail.com',
-    pass: 'gtev bkvl exoh fzrp' // App password
+    user: process.env.BREVO_USER,
+    pass: process.env.BREVO_PASS
   }
 });
 
 transporter.verify(function (error, success) {
   if (error) {
-    console.log("❌ Gmail SMTP error:", error);
+    console.log("❌ Brevo SMTP error:", error);
   } else {
-    console.log("✅ Gmail SMTP is ready to send mails.");
+    console.log("✅ Brevo SMTP is ready to send mails.");
   }
 });
 
@@ -48,7 +50,7 @@ app.post("/api/send-otp", async (req, res) => {
   }
 
   const mailOptions = {
-    from: '"FixMyArea" <utsavraj2004u@gmail.com>',
+    from: '"FixMyArea" <fixmyareas@gmail.com>',
     to: email,
     subject: '🔐 Your FixMyArea Registration OTP',
     html: `
@@ -131,7 +133,7 @@ app.post("/api/send-to-government", async (req, res) => {
   }
 
   const mailOptions = {
-    from: '"FixMyArea" <utsavraj2004u@gmail.com>',
+    from: '"FixMyArea" <fixmyareas@gmail.com>',
     to: governmentEmail,
     subject: `🚨 Community Issue Report: ${issueTitle}`,
     html: `
