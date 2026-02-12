@@ -3,7 +3,6 @@ import { auth, db } from "../firebase/config";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import emailjs from "@emailjs/browser"; // Import EmailJS
 import Footer from "../components/Footer";
 
 function Register() {
@@ -59,26 +58,29 @@ function Register() {
     const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate 6 digit OTP
     setGeneratedOtp(otp);
 
-    const templateParams = {
-      to_email: form.email,
-      to_name: form.name,
-      otp: otp,
-    };
-
     try {
-      // Replace with your actual IDs from EmailJS dashboard
-      await emailjs.send(
-        "service_rxu5dnq", // e.g., service_xyz
-        "template_ru43gdr", // e.g., template_abc
-        templateParams,
-        "AAgvnwomRlgmMRJNE" // e.g., user_123xyz
-      );
-      setOtpSent(true);
-      setError("");
-      alert(`OTP sent to ${form.email}`);
+      const response = await fetch('http://localhost:3001/api/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: form.email,
+          name: form.name,
+          otp: otp
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setOtpSent(true);
+        setError("");
+        alert(`OTP sent to ${form.email}`);
+      } else {
+        setError(data.message || "Failed to send OTP. Please try again.");
+      }
     } catch (err) {
       console.error("Failed to send OTP", err);
-      setError("Failed to send OTP. Please check email or try again.");
+      setError("Failed to send OTP. Please check your connection or try again.");
     } finally {
       setOtpLoading(false);
     }
@@ -247,9 +249,8 @@ function Register() {
                     value={form.email}
                     onChange={handleChange}
                     disabled={isEmailVerified} // Lock email after verification
-                    className={`w-full rounded-2xl border ${
-                      isEmailVerified ? "border-green-500 bg-green-50" : "border-gray-200/80 bg-white/70"
-                    } px-4 py-3 text-gray-700 shadow-sm transition focus:border-govBlue focus:outline-none focus:ring-2 focus:ring-govBlue/20`}
+                    className={`w-full rounded-2xl border ${isEmailVerified ? "border-green-500 bg-green-50" : "border-gray-200/80 bg-white/70"
+                      } px-4 py-3 text-gray-700 shadow-sm transition focus:border-govBlue focus:outline-none focus:ring-2 focus:ring-govBlue/20`}
                     required
                   />
                   {!isEmailVerified && (
@@ -263,7 +264,7 @@ function Register() {
                     </button>
                   )}
                   {isEmailVerified && (
-                     <span className="flex items-center text-green-600 font-bold text-sm px-2">✓ Verified</span>
+                    <span className="flex items-center text-green-600 font-bold text-sm px-2">✓ Verified</span>
                   )}
                 </div>
               </div>

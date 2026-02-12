@@ -16,30 +16,95 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 
-// ✅ FIX: Use port 2525 instead of 587 for Render compatibility
+// Nodemailer configuration for Gmail
 const transporter = nodemailer.createTransport({
-  host: 'smtp-relay.brevo.com',
-  port: 2525, // ← Changed from 587 to 2525
-  secure: false,
+  service: 'gmail',
   auth: {
-    user: process.env.BREVO_USER,
-    pass: process.env.BREVO_PASS
-  },
-  tls: { 
-    rejectUnauthorized: false 
-  },
-  connectionTimeout: 10000, // ✅ 10 second timeout
-  greetingTimeout: 10000,
-  socketTimeout: 10000
+    user: 'utsavraj2004u@gmail.com',
+    pass: 'gtev bkvl exoh fzrp' // App password
+  }
 });
 
 transporter.verify(function (error, success) {
   if (error) {
-    console.log("❌ Brevo SMTP error:", error);
+    console.log("❌ Gmail SMTP error:", error);
   } else {
-    console.log("✅ Brevo SMTP is ready to send mails.");
+    console.log("✅ Gmail SMTP is ready to send mails.");
   }
 });
+
+// SEND OTP - endpoint for registration
+app.post("/api/send-otp", async (req, res) => {
+  const { email, name, otp } = req.body;
+
+  console.log("📧 OTP request received for:", email);
+
+  if (!email || !otp) {
+    return res.status(400).json({
+      success: false,
+      message: "Email and OTP are required"
+    });
+  }
+
+  const mailOptions = {
+    from: '"FixMyArea" <utsavraj2004u@gmail.com>',
+    to: email,
+    subject: '🔐 Your FixMyArea Registration OTP',
+    html: `
+      <div style="font-family:'Segoe UI',Arial,sans-serif;background:#f0f9ff;padding:30px 0;">
+        <div style="max-width:600px;background:#fff;border-radius:20px;box-shadow:0 4px 20px rgba(0,0,0,0.1);margin:0 auto;padding:40px 30px;">
+          <div style="text-align:center;margin-bottom:30px;">
+            <div style="background:linear-gradient(135deg,#ff6b35,#f7931e);color:#fff;font-size:26px;font-weight:700;letter-spacing:1px;border-radius:12px;padding:20px;display:inline-block;">
+              FixMyArea
+            </div>
+          </div>
+          <h2 style="color:#1f2937;margin:0 0 20px 0;font-size:24px;text-align:center;">Email Verification</h2>
+          <p style="color:#4b5563;font-size:16px;line-height:1.6;margin-bottom:30px;">
+            Hi ${name || 'there'},<br><br>
+            Thank you for registering with FixMyArea! Please use the OTP below to verify your email address and complete your registration.
+          </p>
+          <div style="background:linear-gradient(135deg,#eff6ff,#dbeafe);padding:25px;border-radius:12px;text-align:center;margin:30px 0;">
+            <div style="color:#6b7280;font-size:14px;font-weight:600;margin-bottom:10px;">YOUR OTP CODE</div>
+            <div style="font-size:36px;font-weight:700;letter-spacing:8px;color:#1e40af;font-family:monospace;">${otp}</div>
+          </div>
+          <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:15px;border-radius:8px;margin:25px 0;">
+            <p style="margin:0;color:#92400e;font-size:14px;">
+              <strong>⚠️ Security Notice:</strong> This OTP is valid for 10 minutes. Never share this code with anyone.
+            </p>
+          </div>
+          <p style="color:#6b7280;font-size:14px;line-height:1.6;margin-top:30px;text-align:center;">
+            If you didn't request this code, please ignore this email.
+          </p>
+          <div style="border-top:2px solid #e5e7eb;margin-top:30px;padding-top:20px;text-align:center;">
+            <p style="color:#9ca3af;font-size:12px;margin:0;">
+              Sent by FixMyArea Platform<br>
+              Making Communities Better Together
+            </p>
+          </div>
+        </div>
+      </div>
+    `
+  };
+
+  try {
+    console.log("📤 Sending OTP to:", email);
+    const info = await transporter.sendMail(mailOptions);
+    console.log("✅ OTP sent successfully:", info.messageId);
+    res.json({ success: true, message: "OTP sent successfully!" });
+  } catch (err) {
+    console.error("❌ OTP send failed:");
+    console.error("Error code:", err.code);
+    console.error("Error message:", err.message);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to send OTP",
+      error: err.message,
+      code: err.code
+    });
+  }
+});
+
 
 // SEND to Government - endpoint
 app.post("/api/send-to-government", async (req, res) => {
@@ -65,7 +130,7 @@ app.post("/api/send-to-government", async (req, res) => {
   }
 
   const mailOptions = {
-    from: `"FixMyArea" <fixmyareas@gmail.com>`,
+    from: '"FixMyArea" <utsavraj2004u@gmail.com>',
     to: governmentEmail,
     subject: `🚨 Community Issue Report: ${issueTitle}`,
     html: `
@@ -103,10 +168,10 @@ app.post("/api/send-to-government", async (req, res) => {
     console.error("❌ Email send failed:");
     console.error("Error code:", err.code);
     console.error("Error message:", err.message);
-    
-    res.status(500).json({ 
-      success: false, 
-      message: "Mail send failed", 
+
+    res.status(500).json({
+      success: false,
+      message: "Mail send failed",
       error: err.message,
       code: err.code
     });
@@ -114,8 +179,8 @@ app.post("/api/send-to-government", async (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.json({ 
-    status: "✅ FixMyArea Backend Running with Brevo", 
+  res.json({
+    status: "✅ FixMyArea Backend Running with Brevo",
     time: new Date().toISOString(),
     smtp: "Port 2525"
   });

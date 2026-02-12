@@ -161,7 +161,7 @@ export default function IssueDetailPage() {
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-orange-100">
           {/* Issue Image */}
           {issue.photoURL && (
-            <div 
+            <div
               className="relative bg-gray-900 cursor-pointer group"
               onClick={() => setShowImageModal(true)}
             >
@@ -214,8 +214,8 @@ export default function IssueDetailPage() {
                   <span>Location</span>
                 </div>
                 <div className="font-semibold text-gray-800 text-sm">
-                  {typeof issue.location === "object" 
-                    ? Object.values(issue.location).filter(Boolean).join(", ") 
+                  {typeof issue.location === "object"
+                    ? Object.values(issue.location).filter(Boolean).join(", ")
                     : (issue.location || "Not specified")}
                 </div>
               </div>
@@ -234,7 +234,7 @@ export default function IssueDetailPage() {
                 <span className="text-3xl">👤</span>
                 <h3 className="text-xl font-bold text-gray-800">Reporter Information</h3>
               </div>
-              
+
               {userData ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* User Name */}
@@ -298,14 +298,14 @@ export default function IssueDetailPage() {
                       <div>
                         <div className="text-xs text-gray-500 mb-1">Reported On</div>
                         <div className="font-semibold text-gray-800">
-                          {issue.createdAt 
+                          {issue.createdAt
                             ? new Date(issue.createdAt.seconds * 1000).toLocaleString("en-IN", {
-                                day: 'numeric',
-                                month: 'long',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })
                             : "Date not available"}
                         </div>
                       </div>
@@ -332,11 +332,10 @@ export default function IssueDetailPage() {
                     key={s}
                     disabled={updating || issue.status === s}
                     onClick={() => handleStatusUpdate(s)}
-                    className={`px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${
-                      issue.status === s
-                        ? "bg-orange-500 text-white shadow-lg cursor-default"
-                        : "bg-gray-100 text-gray-700 hover:bg-orange-100 hover:text-orange-700 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                    }`}
+                    className={`px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${issue.status === s
+                      ? "bg-orange-500 text-white shadow-lg cursor-default"
+                      : "bg-gray-100 text-gray-700 hover:bg-orange-100 hover:text-orange-700 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                      }`}
                   >
                     {s}
                   </button>
@@ -357,7 +356,7 @@ export default function IssueDetailPage() {
                   <p className="text-xs text-red-600 text-center mt-2">⚠️ This action cannot be undone!</p>
                 </div>
               )}
-              
+
               {updating && (
                 <div className="mt-3 text-sm text-orange-600 flex items-center gap-2 justify-center">
                   <div className="w-4 h-4 border-2 border-orange-600 border-t-transparent rounded-full animate-spin" />
@@ -374,9 +373,10 @@ export default function IssueDetailPage() {
         <EmailForm issue={issue} onClose={() => setShowEmailForm(false)} />
       )}
 
+
       {/* Image Lightbox Modal */}
       {showImageModal && issue.photoURL && (
-        <div 
+        <div
           className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={() => setShowImageModal(false)}
         >

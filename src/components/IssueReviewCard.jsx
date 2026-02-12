@@ -19,8 +19,8 @@ export default function IssueReviewCard({ issue }) {
       <div className="flex flex-wrap items-center gap-2">
         <h3 className="font-bold text-lg text-gray-900">{issue.title}</h3>
         <span className={`text-xs rounded-full px-3 py-[2px] bg-gray-100 border ${issue.status === "Resolved"
-            ? "border-green-400 text-green-700"
-            : issue.status === "Pending"
+          ? "border-green-400 text-green-700"
+          : issue.status === "Pending"
             ? "border-orange-400 text-orange-700"
             : "border-gray-400 text-gray-600"
           }`}>
@@ -41,6 +41,7 @@ export default function IssueReviewCard({ issue }) {
       </div>
 
       {showEmail && <EmailForm issue={issue} onClose={() => setShowEmail(false)} />}
+
       {/* Optional edit modal section */}
       {showEdit && (
         <div className="p-3 mt-3 rounded bg-gray-50 border">
