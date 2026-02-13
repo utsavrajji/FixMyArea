@@ -26,7 +26,7 @@ if (!process.env.BREVO_USER || !process.env.BREVO_PASS) {
 
 const transporter = nodemailer.createTransport({
   host: 'smtp-relay.brevo.com',
-  port: 587,
+  port: 2525, // Port 2525 is designed for cloud platforms (587 is often blocked)
   secure: false, // use TLS
   auth: {
     user: process.env.BREVO_USER,
