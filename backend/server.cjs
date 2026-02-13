@@ -18,6 +18,12 @@ app.use(cors({
 app.use(bodyParser.json());
 
 // Nodemailer configuration using Brevo (more reliable for cloud hosting)
+// Check if credentials are available
+if (!process.env.BREVO_USER || !process.env.BREVO_PASS) {
+  console.error("⚠️ WARNING: BREVO_USER or BREVO_PASS environment variables are not set!");
+  console.error("⚠️ Email functionality will not work. Please set these in Render environment variables.");
+}
+
 const transporter = nodemailer.createTransport({
   host: 'smtp-relay.brevo.com',
   port: 587,
@@ -31,8 +37,11 @@ const transporter = nodemailer.createTransport({
 transporter.verify(function (error, success) {
   if (error) {
     console.log("❌ Brevo SMTP error:", error);
+    console.log("❌ Details:", error.message);
+    console.log("⚠️ Please check BREVO_USER and BREVO_PASS environment variables");
   } else {
     console.log("✅ Brevo SMTP is ready to send mails.");
+    console.log("✅ Using email:", process.env.BREVO_USER);
   }
 });
 
@@ -98,10 +107,11 @@ app.post("/api/send-otp", async (req, res) => {
     console.error("❌ OTP send failed:");
     console.error("Error code:", err.code);
     console.error("Error message:", err.message);
+    console.error("Full error:", err);
 
     res.status(500).json({
       success: false,
-      message: "Failed to send OTP",
+      message: "Failed to send OTP. Please check server logs.",
       error: err.message,
       code: err.code
     });
