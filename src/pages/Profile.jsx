@@ -3,7 +3,9 @@ import { auth, db } from "../firebase/config";
 import { doc, getDoc, updateDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { updateProfile, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { AlertTriangle, X, CheckCircle, BarChart3, ClipboardList, Clock, Lock, Mail, IdCard, Calendar, User, Pencil } from "lucide-react";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -200,24 +202,28 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <>
+      <Navbar />
+      <div className="min-h-screen flex items-center justify-center bg-[#F3F4F6]">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-16 h-16 border-4 border-[#064E3B] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-600 font-medium">Loading profile...</p>
         </div>
       </div>
+      </>
     );
   }
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 px-4">
+      <Navbar />
+      <div className="min-h-screen bg-[#F3F4F6] py-8 px-4">
         <div className="max-w-5xl mx-auto">
           {/* Header */}
           <div className="mb-8">
             <button
               onClick={() => navigate("/dashboard")}
-              className="flex items-center gap-2 text-gray-600 hover:text-orange-600 transition-colors duration-300 mb-4"
+              className="flex items-center gap-2 text-gray-600 hover:text-[#064E3B] transition-colors duration-300 mb-4"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -226,7 +232,7 @@ export default function Profile() {
             </button>
             
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-xl">
+              <div className="w-16 h-16 bg-[#064E3B] rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-xl">
                 {formData.displayName ? formData.displayName.charAt(0).toUpperCase() : "U"}
               </div>
               <div>
@@ -239,23 +245,27 @@ export default function Profile() {
           {/* Alerts */}
           {error && (
             <div className="mb-6 bg-red-50 border-2 border-red-200 text-red-700 px-6 py-4 rounded-xl flex items-center gap-3 animate-shake">
-              <span className="text-2xl">⚠️</span>
+              <AlertTriangle className="w-8 h-8 text-red-500" />
               <div>
                 <p className="font-semibold">Error</p>
                 <p className="text-sm">{error}</p>
               </div>
-              <button onClick={() => setError("")} className="ml-auto text-red-700 hover:text-red-900">✕</button>
+              <button onClick={() => setError("")} className="ml-auto text-red-700 hover:text-red-900 group">
+                <X className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              </button>
             </div>
           )}
 
           {success && (
             <div className="mb-6 bg-green-50 border-2 border-green-200 text-green-700 px-6 py-4 rounded-xl flex items-center gap-3">
-              <span className="text-2xl">✅</span>
+              <CheckCircle className="w-8 h-8 text-green-500" />
               <div>
                 <p className="font-semibold">Success!</p>
                 <p className="text-sm">{success}</p>
               </div>
-              <button onClick={() => setSuccess("")} className="ml-auto text-green-700 hover:text-green-900">✕</button>
+              <button onClick={() => setSuccess("")} className="ml-auto text-green-700 hover:text-green-900 group">
+                <X className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              </button>
             </div>
           )}
 
@@ -265,7 +275,7 @@ export default function Profile() {
               {/* Statistics Card */}
               <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
                 <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                  <span className="text-2xl">📊</span>
+                  <BarChart3 className="w-7 h-7 text-blue-500" />
                   <span>Your Statistics</span>
                 </h2>
                 
@@ -277,7 +287,7 @@ export default function Profile() {
                         <p className="text-3xl font-bold text-blue-700">{userStats.total}</p>
                       </div>
                       <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
-                        <span className="text-2xl">📋</span>
+                        <ClipboardList className="w-6 h-6 text-white" />
                       </div>
                     </div>
                   </div>
@@ -289,7 +299,7 @@ export default function Profile() {
                         <p className="text-3xl font-bold text-yellow-700">{userStats.pending}</p>
                       </div>
                       <div className="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center">
-                        <span className="text-2xl">⏳</span>
+                        <Clock className="w-6 h-6 text-white" />
                       </div>
                     </div>
                   </div>
@@ -301,7 +311,7 @@ export default function Profile() {
                         <p className="text-3xl font-bold text-green-700">{userStats.resolved}</p>
                       </div>
                       <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                        <span className="text-2xl">✅</span>
+                        <CheckCircle className="w-6 h-6 text-white" />
                       </div>
                     </div>
                   </div>
@@ -311,14 +321,14 @@ export default function Profile() {
               {/* Account Info Card */}
               <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
                 <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                  <span className="text-2xl">🔐</span>
+                  <Lock className="w-7 h-7 text-gray-500" />
                   <span>Account Info</span>
                 </h2>
                 
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 text-sm">
                     <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                      <span>📧</span>
+                      <Mail className="w-5 h-5 text-purple-600" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-gray-500">Email</p>
@@ -328,7 +338,7 @@ export default function Profile() {
 
                   <div className="flex items-center gap-3 text-sm">
                     <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span>🆔</span>
+                      <IdCard className="w-5 h-5 text-blue-600" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-gray-500">User ID</p>
@@ -338,7 +348,7 @@ export default function Profile() {
 
                   <div className="flex items-center gap-3 text-sm">
                     <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                      <span>📅</span>
+                      <Calendar className="w-5 h-5 text-green-600" />
                     </div>
                     <div className="flex-1">
                       <p className="text-xs text-gray-500">Member Since</p>
@@ -357,7 +367,7 @@ export default function Profile() {
 
                 <button
                   onClick={() => setChangingPassword(!changingPassword)}
-                  className="mt-4 w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-2.5 rounded-xl font-semibold hover:from-purple-600 hover:to-purple-700 transition-all duration-300 hover:scale-105"
+                  className="mt-4 w-full bg-[#064E3B] text-white py-2.5 rounded-xl font-semibold hover:bg-[#053d2f] transition-all duration-300"
                 >
                   {changingPassword ? "Cancel Password Change" : "Change Password"}
                 </button>
@@ -369,15 +379,15 @@ export default function Profile() {
               <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                    <span className="text-2xl">👤</span>
+                    <User className="w-7 h-7 text-gray-600" />
                     <span>Profile Information</span>
                   </h2>
                   {!editing && !changingPassword && (
                     <button
                       onClick={() => setEditing(true)}
-                      className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                      className="px-4 py-2 bg-[#064E3B] text-white rounded-xl font-semibold hover:bg-[#053d2f] transition-all duration-300 flex items-center gap-2"
                     >
-                      <span>✏️</span>
+                      <Pencil className="w-4 h-4 mr-1 inline" />
                       <span>Edit Profile</span>
                     </button>
                   )}
@@ -433,7 +443,7 @@ export default function Profile() {
                       <button
                         type="submit"
                         disabled={updating}
-                        className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 rounded-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex-1 bg-[#064E3B] text-white py-3 rounded-xl font-bold hover:bg-[#053d2f] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {updating ? "Updating..." : "Update Password"}
                       </button>
@@ -553,7 +563,7 @@ export default function Profile() {
                       <button
                         type="submit"
                         disabled={updating}
-                        className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 rounded-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex-1 bg-[#064E3B] text-white py-3 rounded-xl font-bold hover:bg-[#053d2f] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {updating ? "Saving..." : "Save Changes"}
                       </button>

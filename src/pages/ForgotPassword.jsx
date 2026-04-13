@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase/config";
+import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { LockKeyhole, Mail, ArrowLeft, Lightbulb, AlertCircle, CircleCheck } from "lucide-react";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -25,7 +27,7 @@ function ForgotPassword() {
 
     try {
       await sendPasswordResetEmail(auth, email);
-      setMessage("✅ Password reset email sent! Check your inbox (and spam folder).");
+      setMessage("Password reset email sent! Check your inbox (and spam folder).");
       setEmail("");
       
       // Redirect after 3 seconds
@@ -51,6 +53,7 @@ function ForgotPassword() {
 
   return (
     <>
+      <Navbar />
       <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-b from-[#fff3f3] via-white to-[#fff8f8] px-4 py-12">
         {/* Background decorations */}
         <div className="pointer-events-none absolute inset-0">
@@ -62,8 +65,8 @@ function ForgotPassword() {
           <div className="rounded-[28px] border border-[#ffc1c1]/60 bg-gradient-to-br from-white/95 via-white/85 to-[#ffe7e7]/90 px-6 py-8 shadow-2xl backdrop-blur-xl sm:rounded-[32px] sm:px-8 sm:py-10">
             {/* Header */}
             <div className="text-center mb-8">
-              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-pink-500 to-red-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
-                <span className="text-3xl">🔐</span>
+              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-pink-500 to-red-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg text-white">
+                <LockKeyhole className="w-8 h-8" />
               </div>
               <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">
                 Forgot Password?
@@ -76,14 +79,14 @@ function ForgotPassword() {
             {/* Error Message */}
             {error && (
               <div className="mb-6 rounded-xl border border-red-200 bg-red-50/80 px-4 py-3 text-center text-sm font-medium text-red-600 shadow-sm animate-shake">
-                ❌ {error}
+                <AlertCircle className="w-4 h-4 inline mr-1 -mt-0.5" /> {error}
               </div>
             )}
 
             {/* Success Message */}
             {message && (
               <div className="mb-6 rounded-xl border border-green-200 bg-green-50/80 px-4 py-3 text-center text-sm font-medium text-green-600 shadow-sm">
-                {message}
+                <CircleCheck className="w-4 h-4 inline mr-1 -mt-0.5" /> {message}
               </div>
             )}
 
@@ -116,7 +119,7 @@ function ForgotPassword() {
                   </>
                 ) : (
                   <>
-                    <span>📧</span>
+                    <Mail className="w-5 h-5" />
                     <span>Send Reset Link</span>
                   </>
                 )}
@@ -130,7 +133,7 @@ function ForgotPassword() {
                 onClick={() => navigate("/login")}
                 className="transition hover:text-red-600 flex items-center justify-center gap-2"
               >
-                <span>←</span>
+                <ArrowLeft className="w-4 h-4" />
                 <span>Back to Login</span>
               </button>
               
@@ -145,7 +148,9 @@ function ForgotPassword() {
 
             {/* Info Box */}
             <div className="mt-6 rounded-xl bg-blue-50/80 border border-blue-200 px-4 py-3 text-xs text-blue-700">
-              <p className="font-semibold mb-1">💡 How it works:</p>
+              <p className="font-semibold mb-1 flex items-center">
+                <Lightbulb className="w-3.5 h-3.5 mr-1" /> How it works:
+              </p>
               <ol className="list-decimal list-inside space-y-1">
                 <li>Enter your registered email</li>
                 <li>Check your inbox for reset link</li>

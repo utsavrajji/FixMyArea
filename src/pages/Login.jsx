@@ -3,7 +3,15 @@ import { auth, db } from "../firebase/config";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+
+function generateCaptcha() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let text = "";
+  for (let i = 0; i < 5; i++) text += chars.charAt(Math.floor(Math.random() * chars.length));
+  return text;
+}
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -14,197 +22,113 @@ function Login() {
   const [userCaptcha, setUserCaptcha] = useState("");
   const navigate = useNavigate();
 
-  function generateCaptcha() {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let text = "";
-    for (let i = 0; i < 5; i++) {
-      text += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return text;
-  }
-
-  const refreshCaptcha = () => {
-    setCaptcha(generateCaptcha());
-    setUserCaptcha("");
-    setError("");
-  };
+  const refreshCaptcha = () => { setCaptcha(generateCaptcha()); setUserCaptcha(""); setError(""); };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
-    // Validation
-    if (!email || !password) {
-      setError("Please enter email and password");
-      return;
-    }
+    if (!email || !password) { setError("Please enter email and password"); return; }
     if (userCaptcha.trim().toUpperCase() !== captcha.toUpperCase()) {
-      setError("Captcha does not match. Try again!");
-      refreshCaptcha();
-      return;
+      setError("Captcha does not match. Try again!"); refreshCaptcha(); return;
     }
-
     setLoading(true);
-
     try {
-      // Step 1: Sign in with Firebase Auth
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      // Step 2: Fetch user document from Firestore
-      const userDocRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userDocRef);
-
-      if (!userDoc.exists()) {
-        setError("User profile not found. Please contact support.");
-        await auth.signOut(); // Sign out if profile missing
-        refreshCaptcha();
-        return;
-      }
-
-      const userData = userDoc.data();
-      const role = userData.role || "citizen";
-
-      // Success
-      setError("");
-      alert("Login successful! Redirecting...");
-
-      // Navigate based on role
-      if (role === "admin") {
-        navigate("/admin-dashboard");
-      } else {
-        navigate("/dashboard");
-      }
+      const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
+      if (!userDoc.exists()) { setError("User profile not found."); await auth.signOut(); refreshCaptcha(); return; }
+      const role = userDoc.data().role || "citizen";
+      if (role === "admin") navigate("/admin-dashboard");
+      else navigate("/dashboard");
     } catch (err) {
-      console.error("Login error:", err.code, err.message);
-
-      // Handle specific errors
       if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
         setError("Invalid email or password.");
-        alert("Login failed: Invalid email or password.");
-      } else if (err.code === "permission-denied") {
-        setError("Permission denied. Please check Firestore security rules.");
-        alert("Login failed: Permission denied. Contact support.");
       } else {
         setError(err.message || "Login failed. Please try again.");
-        alert(`Login failed: ${err.message}`);
       }
       refreshCaptcha();
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
+
+  const inputClass = "w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 shadow-sm transition-all focus:border-[#064E3B] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/15";
 
   return (
     <>
-      <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#f3fff6] via-white to-[#f8fff8] flex items-center justify-center px-4 py-16">
-        {/* Decorative background elements */}
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-24 left-6 hidden h-72 w-72 rounded-[42px] border border-dashed border-[#a3e4c1]/70 bg-[#e7fff0]/60 backdrop-blur-md animate-pulse-soft sm:block" />
-          <div className="absolute top-24 right-20 hidden h-56 w-56 rounded-full bg-[#dff8eb]/90 blur-2xl md:block animate-float-rev" />
-          <div className="absolute bottom-12 left-1/4 hidden h-64 w-64 rounded-[36px] bg-white/60 shadow-soft-hero lg:block animate-float-slow" />
-        </div>
+      <Navbar />
+      <div className="min-h-screen bg-[#F3F4F6] flex items-center justify-center px-4 py-16">
+        <div className="w-full max-w-md">
+          {/* Badge */}
+          <div className="mb-6 flex justify-center">
+            <span className="inline-flex items-center gap-2 rounded-full bg-[#064E3B]/10 px-4 py-1.5 text-xs font-semibold text-[#064E3B]">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              Secure Login Portal
+            </span>
+          </div>
 
-        <div className="relative z-10 w-full max-w-lg">
-        <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm font-medium text-blue-600 shadow-lg backdrop-blur">
-          <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-          Welcome back
-        </div>
-
-        <div className="mt-6 rounded-[32px] border border-[#a3e4c1]/60 bg-gradient-to-br from-white/95 via-white/80 to-[#dff8eb]/90 px-10 py-12 shadow-2xl backdrop-blur-xl">
-          <h2 className="text-3xl font-bold text-gray-900 text-center">Login</h2>
-          <p className="mt-2 text-center text-gray-600">
-            Access your dashboard and continue improving your locality.
-          </p>
-
-          {error && (
-            <div className="mt-6 rounded-xl border border-red-200 bg-red-50/80 px-4 py-3">
-              <p className="text-center text-sm font-medium text-red-600">{error}</p>
+          <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-lg sm:p-10">
+            {/* Header */}
+            <div className="mb-8 text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#064E3B]">
+                <svg className="h-7 w-7 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                </svg>
+              </div>
+              <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
+              <p className="mt-1 text-sm text-gray-500">Sign in to your FixMyArea account</p>
             </div>
-          )}
 
-          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-            <div className="space-y-5">
+            {error && (
+              <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-center text-sm font-medium text-red-600">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="mb-2 block text-left text-sm font-semibold text-gray-700">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-2xl border border-gray-200 bg-white/70 px-4 py-3 text-gray-700 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                  required
-                />
+                <label className="mb-1.5 block text-sm font-semibold text-gray-700">Email Address</label>
+                <input type="email" placeholder="you@example.com" value={email}
+                  onChange={(e) => setEmail(e.target.value)} className={inputClass} required />
               </div>
 
               <div>
-                <label className="mb-2 block text-left text-sm font-semibold text-gray-700">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-2xl border border-gray-200 bg-white/70 px-4 py-3 text-gray-700 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                  required
-                />
+                <label className="mb-1.5 block text-sm font-semibold text-gray-700">Password</label>
+                <input type="password" placeholder="Enter your password" value={password}
+                  onChange={(e) => setPassword(e.target.value)} className={inputClass} required />
               </div>
-            </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex-1 select-none rounded-2xl bg-white/70 px-4 py-3 text-center text-lg font-bold tracking-[0.4em] text-gray-800 shadow-inner">
-                  {captcha}
+              {/* Captcha */}
+              <div className="space-y-3">
+                <label className="block text-sm font-semibold text-gray-700">Security Check</label>
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 select-none rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-3 text-center font-mono text-lg font-bold tracking-[0.4em] text-gray-700">
+                    {captcha}
+                  </div>
+                  <button type="button" onClick={refreshCaptcha}
+                    className="rounded-xl border border-[#064E3B]/20 bg-[#064E3B]/5 px-3 py-2 text-xs font-semibold text-[#064E3B] transition hover:bg-[#064E3B]/10">
+                    ↻ Refresh
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={refreshCaptcha}
-                  className="rounded-full bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:from-blue-600 hover:to-blue-700 transition"
-                >
-                  Refresh
-                </button>
+                <input type="text" placeholder="Type the characters above" value={userCaptcha}
+                  onChange={(e) => setUserCaptcha(e.target.value)} className={inputClass} required />
               </div>
 
-              <input
-                type="text"
-                placeholder="Enter the characters above"
-                value={userCaptcha}
-                onChange={(e) => setUserCaptcha(e.target.value)}
-                className="w-full rounded-2xl border border-gray-200 bg-white/70 px-4 py-3 text-gray-700 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                required
-              />
+              <button type="submit" disabled={loading}
+                className="w-full rounded-xl bg-[#064E3B] py-3.5 text-sm font-bold text-white shadow-md transition-all duration-300 hover:bg-[#053d2f] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60">
+                {loading ? "Signing in..." : "Sign In"}
+              </button>
+            </form>
+
+            <div className="mt-6 flex flex-col gap-3 text-center text-sm sm:flex-row sm:justify-between">
+              <button onClick={() => navigate("/register")}
+                className="font-semibold text-[#064E3B] transition hover:text-emerald-600">
+                Create an account →
+              </button>
+              <button onClick={() => navigate("/forgot-password")}
+                className="text-gray-400 transition hover:text-gray-600">
+                Forgot password?
+              </button>
             </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 py-3.5 font-semibold text-white shadow-2xl transition-all duration-300 hover:from-orange-600 hover:to-orange-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {loading ? "Logging in..." : "Login"}
-            </button>
-          </form>
-
-          <div className="mt-8 flex flex-col gap-4 text-sm font-medium text-blue-600 md:flex-row md:items-center md:justify-between">
-            <button
-              type="button"
-              onClick={() => navigate("/register")}
-              className="transition hover:text-orange-600"
-            >
-              Create an account
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/forgot-password")}
-              className="transition hover:text-orange-600"
-            >
-              Forgot password?
-            </button>
           </div>
         </div>
-      </div>
       </div>
       <Footer />
     </>

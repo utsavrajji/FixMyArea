@@ -1,75 +1,75 @@
 function AboutSection() {
+  const cards = [
+    {
+      emoji: "🗣️",
+      title: "Citizens Voice Heard",
+      desc: "Every citizen gets a platform to report and track local issues easily",
+      bg: "bg-emerald-50",
+      border: "border-emerald-100",
+      iconBg: "bg-emerald-100",
+    },
+    {
+      emoji: "⚡",
+      title: "Faster Response",
+      desc: "Government departments get instant notifications for urgent issues",
+      bg: "bg-amber-50",
+      border: "border-amber-100",
+      iconBg: "bg-amber-100",
+    },
+    {
+      emoji: "👁️",
+      title: "Transparent Tracking",
+      desc: "Track your issue status from submission to resolution in real-time",
+      bg: "bg-sky-50",
+      border: "border-sky-100",
+      iconBg: "bg-sky-100",
+    },
+    {
+      emoji: "🤝",
+      title: "Community Power",
+      desc: "Upvote and verify issues to help prioritize what matters most",
+      bg: "bg-purple-50",
+      border: "border-purple-100",
+      iconBg: "bg-purple-100",
+    },
+  ];
+
   return (
-    <section className="relative overflow-hidden py-16 bg-gradient-to-b from-[#f0fff5] via-[#f6fff9] to-white scroll-fade sm:py-20 lg:py-24">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-10 -left-12 hidden h-56 w-56 rounded-3xl border border-dashed border-[#a6e6c4]/70 bg-[#e7fff0]/50 backdrop-blur-sm animate-pulse-soft sm:block" />
-        <div className="absolute top-1/4 right-24 hidden h-48 w-48 rounded-full bg-white/60 shadow-soft-hero md:block animate-float-slow" />
-        <div className="absolute bottom-8 left-1/3 hidden h-40 w-40 rounded-3xl bg-[#d8fbe6]/80 blur-xl animate-float-rev md:block" />
-      </div>
-
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
-        <div className="text-center">
-          <div className="inline-flex items-center gap-3 rounded-full bg-white/70 px-4 py-2 text-xs font-medium text-govBlue shadow-soft-hero/40 backdrop-blur-md animate-float-slow sm:text-sm">
-            <span className="block h-2 w-2 rounded-full bg-govGreen animate-pulse-soft" />
+    <section className="scroll-fade bg-[#F3F4F6] py-16 sm:py-20 lg:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+        {/* Header */}
+        <div className="mb-12 text-center sm:mb-16">
+          <span className="inline-flex items-center gap-2 rounded-full bg-[#064E3B]/10 px-4 py-1.5 text-xs font-semibold text-[#064E3B] sm:text-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#064E3B]" />
             Why FixMyArea stands out
-          </div>
-
-          <h2 className="mt-6 text-2xl font-bold text-govText sm:text-3xl md:text-4xl">
-            Why <span className="text-govBlue">FixMyArea?</span>
+          </span>
+          <h2 className="mt-5 text-2xl font-bold text-gray-900 sm:text-3xl md:text-4xl">
+            Why <span className="text-[#064E3B]">FixMyArea?</span>
           </h2>
-          <p className="mt-4 mx-auto max-w-2xl text-base text-gray-600 sm:text-lg">
-            Bridging the gap between citizens and government for faster resolution of local issues
+          <p className="mt-4 mx-auto max-w-2xl text-sm text-gray-500 sm:text-base">
+            Bridging the gap between citizens and government for faster resolution
+            of local issues
           </p>
         </div>
 
-        <div className="mt-12 grid gap-6 sm:mt-16 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-          {/* Benefit 1 */}
-          <div className="relative rounded-2xl border border-white/40 bg-white/85 p-6 text-center shadow-xl backdrop-blur-md transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
-            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-govBlue/15 via-white to-govGreen/15 shadow-soft-hero">
-              <span className="text-3xl">🗣️</span>
+        {/* Cards */}
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+          {cards.map(({ emoji, title, desc, bg, border, iconBg }) => (
+            <div
+              key={title}
+              className={`group relative rounded-2xl border ${border} ${bg} p-6 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-md`}
+            >
+              <div className={`mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl ${iconBg} text-3xl`}>
+                {emoji}
+              </div>
+              <h3 className="mb-2 text-base font-bold text-gray-900 sm:text-lg">{title}</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
             </div>
-            <h3 className="mb-2 text-lg font-semibold text-govText sm:text-xl">Citizens Voice Heard</h3>
-            <p className="text-sm text-gray-600 sm:text-base">
-              Every citizen gets a platform to report and track local issues easily
-            </p>
-          </div>
-
-          {/* Benefit 2 */}
-          <div className="relative rounded-2xl border border-white/40 bg-white/85 p-6 text-center shadow-xl backdrop-blur-md transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
-            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-govGreen/20 via-white to-govBlue/10 shadow-soft-hero">
-              <span className="text-3xl">⚡</span>
-            </div>
-            <h3 className="mb-2 text-lg font-semibold text-govText sm:text-xl">Faster Response</h3>
-            <p className="text-sm text-gray-600 sm:text-base">
-              Government departments get instant notifications for urgent issues
-            </p>
-          </div>
-
-          {/* Benefit 3 */}
-          <div className="relative rounded-2xl border border-white/40 bg-white/85 p-6 text-center shadow-xl backdrop-blur-md transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
-            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-govBlue/15 via-white to-govGreen/15 shadow-soft-hero">
-              <span className="text-3xl">👁️</span>
-            </div>
-            <h3 className="mb-2 text-lg font-semibold text-govText sm:text-xl">Transparent Tracking</h3>
-            <p className="text-sm text-gray-600 sm:text-base">
-              Track your issue status from submission to resolution in real-time
-            </p>
-          </div>
-
-          {/* Benefit 4 */}
-          <div className="relative rounded-2xl border border-white/40 bg-white/85 p-6 text-center shadow-xl backdrop-blur-md transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
-            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-govGreen/20 via-white to-govBlue/10 shadow-soft-hero">
-              <span className="text-3xl">🤝</span>
-            </div>
-            <h3 className="mb-2 text-lg font-semibold text-govText sm:text-xl">Community Power</h3>
-            <p className="text-sm text-gray-600 sm:text-base">
-              Upvote and verify issues to help prioritize what matters most
-            </p>
-          </div>
+          ))}
         </div>
       </div>
     </section>
-  )
+  );
 }
 
-export default AboutSection
+export default AboutSection;

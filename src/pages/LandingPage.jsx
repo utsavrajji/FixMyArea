@@ -4,12 +4,12 @@ import HeroSection from '../components/HeroSection'
 import AboutSection from '../components/AboutSection'
 import HowItWorks from '../components/HowItWorks'
 import BenefitsSection from '../components/BenefitsSection'
+import CtaSection from '../components/CtaSection'
 import Testimonials from '../components/Testimonials'
 import Footer from '../components/Footer'
 
 function LandingPage() {
   useEffect(() => {
-    // Scroll animation observer
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -30,6 +30,7 @@ function LandingPage() {
       <AboutSection />
       <HowItWorks />
       <BenefitsSection />
+      <CtaSection />
       <Testimonials />
       <Footer />
     </div>

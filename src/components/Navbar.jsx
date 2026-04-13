@@ -1,105 +1,196 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { auth } from "../firebase/config";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [user, setUser] = useState(null);
 
-  const handleNavigation = path => {
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      unsubscribe();
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/");
+      setIsMenuOpen(false);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
+  const handleNavigation = (path) => {
     navigate(path);
     setIsMenuOpen(false);
   };
 
-  const closeMenu = () => setIsMenuOpen(false);
+  const isLanding = location.pathname === "/";
+
+  const linkClass =
+    "text-sm font-medium transition-colors duration-200 hover:text-emerald-300";
+  const activeLinkClass = "text-emerald-300 font-semibold";
 
   return (
-    <nav className="sticky top-0 z-50 bg-transparent px-3 py-3 shadow-lg sm:px-6 sm:py-4">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between rounded-2xl border border-white/50 bg-white/70 px-4 py-2.5 text-gray-800 shadow-soft-hero backdrop-blur-xl transition-all duration-300 supports-[backdrop-filter]:border-white/30 supports-[backdrop-filter]:bg-white/35 sm:px-5 sm:py-3">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <img src="/assets/logo.png" alt="FixMyArea" className="h-8 w-8 drop-shadow-sm sm:h-10 sm:w-10" />
-          <span className="text-xl font-extrabold tracking-wide text-orange-600 sm:text-2xl">FixMyArea</span>
-        </div>
+    <nav
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-[#064E3B] shadow-lg"
+          : isLanding
+          ? "bg-[#064E3B]/95 backdrop-blur-md"
+          : "bg-[#064E3B]"
+      }`}
+    >
+      <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20">
+            <img src="/assets/logo.png" alt="FixMyArea" className="h-6 w-6 drop-shadow-sm" />
+          </div>
+          <span className="text-xl font-extrabold tracking-wide text-white">
+            Fix<span className="text-emerald-300">My</span>Area
+          </span>
+        </Link>
 
-        <div className="hidden items-center gap-6 text-sm font-medium text-gray-800/90 lg:flex lg:gap-8 lg:text-base">
-          <Link to="/" className="transition-colors hover:text-orange-500">
-            Home
+        {/* Desktop Links */}
+        <div className="hidden items-center gap-8 lg:flex">
+          {user ? (
+            <Link to="/dashboard" className={`${linkClass} ${location.pathname === "/dashboard" ? activeLinkClass : "text-white/80"}`}>
+              Dashboard
+            </Link>
+          ) : (
+            <Link to="/" className={`${linkClass} ${location.pathname === "/" ? activeLinkClass : "text-white/80"}`}>
+              Home
+            </Link>
+          )}
+          <Link to="/local-issues" className={`${linkClass} ${location.pathname === "/local-issues" ? activeLinkClass : "text-white/80"}`}>
+            Feed
           </Link>
-          <a href="#how-it-works" className="transition-colors hover:text-orange-500">
-            How It Works
-          </a>
-          <a href="#contact" className="transition-colors hover:text-orange-500">
-            Contact
-          </a>
-          <button
-            onClick={() => handleNavigation("/login")}
-            className="rounded-xl border border-transparent bg-orange-500/90 px-4 py-2 text-sm font-semibold text-white shadow-soft-hero transition-all duration-300 hover:-translate-y-0.5 hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500/80 lg:px-5 lg:text-base"
-          >
-            Login
-          </button>
-          <button
-            onClick={() => handleNavigation("/register")}
-            className="rounded-xl border border-orange-500/70 bg-white/50 px-4 py-2 text-sm font-semibold text-orange-600 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500/60 lg:px-5 lg:text-base"
-          >
-            Register
-          </button>
+          <Link to={user ? "/report-issue" : "/login"} className={`${linkClass} ${location.pathname === "/report-issue" ? activeLinkClass : "text-white/80"}`}>
+            Report
+          </Link>
         </div>
 
+        {/* Desktop Buttons */}
+        <div className="hidden items-center gap-3 lg:flex">
+          {user ? (
+            <>
+              <button
+                onClick={() => handleNavigation("/profile")}
+                className="rounded-lg border border-white/30 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-white/10"
+              >
+                Profile
+              </button>
+              <button
+                onClick={handleLogout}
+                className="rounded-lg bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-100 shadow-md transition-all duration-200 hover:bg-red-500/20 hover:text-white"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => handleNavigation("/login")}
+                className="rounded-lg border border-white/30 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-white/10"
+              >
+                Login
+              </button>
+              <button
+                onClick={() => handleNavigation("/register")}
+                className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-[#064E3B] shadow-md transition-all duration-200 hover:bg-emerald-50 hover:shadow-lg"
+              >
+                Get Started
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Mobile Hamburger */}
         <button
           type="button"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/60 bg-white/80 text-sm font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-white lg:hidden"
-          onClick={() => setIsMenuOpen(prev => !prev)}
+          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/30 text-white transition hover:bg-white/10 lg:hidden"
+          onClick={() => setIsMenuOpen((prev) => !prev)}
           aria-expanded={isMenuOpen}
           aria-label="Toggle navigation menu"
         >
-          <span className="sr-only">Toggle navigation</span>
-          <svg
-            className="h-5 w-5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 5.25h16.5M3.75 12h16.5M3.75 18.75h16.5" />
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            {isMenuOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 5.25h16.5M3.75 12h16.5M3.75 18.75h16.5" />
+            )}
           </svg>
         </button>
       </div>
 
+  {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="mx-auto mt-3 flex w-full max-w-6xl flex-col gap-3 rounded-2xl border border-white/50 bg-white/95 px-4 py-4 text-sm font-semibold text-gray-800 shadow-soft-hero backdrop-blur lg:hidden">
-          <Link
-            to="/"
-            className="rounded-xl px-3 py-2 transition-colors hover:bg-orange-50"
-            onClick={closeMenu}
-          >
-            Home
-          </Link>
-          <a
-            href="#how-it-works"
-            className="rounded-xl px-3 py-2 transition-colors hover:bg-orange-50"
-            onClick={closeMenu}
-          >
-            How It Works
-          </a>
-          <a
-            href="#contact"
-            className="rounded-xl px-3 py-2 transition-colors hover:bg-orange-50"
-            onClick={closeMenu}
-          >
-            Contact
-          </a>
-          <button
-            onClick={() => handleNavigation("/login")}
-            className="rounded-xl bg-orange-500/90 px-3 py-2 text-white shadow-soft-hero transition-all duration-200 hover:bg-orange-500"
-          >
-            Login
-          </button>
-          <button
-            onClick={() => handleNavigation("/register")}
-            className="rounded-xl border border-orange-500/70 bg-white px-3 py-2 text-orange-600 transition-all duration-200 hover:bg-orange-50"
-          >
-            Register
-          </button>
+        <div className="border-t border-white/10 bg-[#053d2f] px-4 py-4 lg:hidden">
+          <div className="flex flex-col gap-1">
+            {user ? (
+              <Link to="/dashboard" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
+                Dashboard
+              </Link>
+            ) : (
+              <Link to="/" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
+                Home
+              </Link>
+            )}
+            <Link to="/local-issues" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
+              Feed
+            </Link>
+            <Link to={user ? "/report-issue" : "/login"} className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
+              Report Issue
+            </Link>
+            <div className="mt-3 flex flex-col gap-2">
+              {user ? (
+                <>
+                  <button
+                    onClick={() => handleNavigation("/profile")}
+                    className="rounded-lg border border-white/30 px-3 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
+                  >
+                    Profile
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="rounded-lg bg-red-500/10 px-3 py-2.5 text-sm font-semibold text-red-100 hover:bg-red-500/20 hover:text-white text-left"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => handleNavigation("/login")}
+                    className="rounded-lg border border-white/30 px-3 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => handleNavigation("/register")}
+                    className="rounded-lg bg-white px-3 py-2.5 text-sm font-semibold text-[#064E3B]"
+                  >
+                    Get Started
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </nav>

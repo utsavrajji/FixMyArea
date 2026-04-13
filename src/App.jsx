@@ -13,25 +13,29 @@ import IssueDetail from "./pages/IssueDetail";
 import AdminDashboard from "./pages/AdminDashboard";
 import ContactUs from "./pages/ContactUs";
 import Profile from "./pages/Profile";
+import AIChatbot from "./components/AIChatbot";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/report-issue" element={<ReportIssue />} />
-      <Route path="/local-issues" element={<LocalIssues />} />
-      <Route path="/issue/:id" element={<IssueDetail />} />
-      <Route path="/admin-dashboard" element={<AdminDashboard />} />
-      <Route path="/admin/issue/:id" element={<IssueDetailPage />} />
-      <Route path="/admin" element={<AdminGate />} />
-      <Route path="/history" element={<ResolvedIssues />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/contact" element={<ContactUs />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/report-issue" element={<ReportIssue />} />
+        <Route path="/local-issues" element={<LocalIssues />} />
+        <Route path="/issue/:id" element={<IssueDetail />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/issue/:id" element={<IssueDetailPage />} />
+        <Route path="/admin" element={<AdminGate />} />
+        <Route path="/history" element={<ResolvedIssues />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/contact" element={<ContactUs />} />
+      </Routes>
+      <AIChatbot />
+    </>
   );
 }
 

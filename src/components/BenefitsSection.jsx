@@ -1,98 +1,89 @@
+const BENEFITS = [
+  {
+    icon: "🛰️",
+    title: "GPS-Verified Reports",
+    desc: "Every issue is geo-tagged automatically from photo metadata ensuring accurate, authentic location data.",
+  },
+  {
+    icon: "📸",
+    title: "Photo Evidence",
+    desc: "Capture and upload photos directly. Visual proof makes reports more credible and actionable.",
+  },
+  {
+    icon: "🔒",
+    title: "OTP Security",
+    desc: "Phone-verified accounts prevent spam and ensure a genuine, trusted community on the platform.",
+  },
+  {
+    icon: "📊",
+    title: "Real-time Analytics",
+    desc: "Admin dashboards show live stats across categories so authorities can allocate resources efficiently.",
+  },
+];
+
 function BenefitsSection() {
   return (
-    <section className="relative overflow-hidden py-16 bg-gradient-to-b from-[#f0fff5] via-[#f6fff9] to-white sm:py-20 lg:py-24">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-10 -left-12 hidden h-56 w-56 rounded-3xl border border-dashed border-[#a6e6c4]/70 bg-[#e7fff0]/50 backdrop-blur-sm animate-pulse-soft sm:block" />
-        <div className="absolute top-1/3 left-1/4 hidden h-44 w-44 rounded-3xl bg-white/60 shadow-soft-hero md:block animate-float-slow" />
-        <div className="absolute bottom-10 right-12 h-36 w-36 rounded-full bg-[#d8fbe6]/80 blur-xl animate-float-rev" />
-      </div>
+    <section className="scroll-fade bg-[#F3F4F6] py-16 sm:py-20 lg:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
-        <div className="grid gap-10 items-center md:grid-cols-[1.05fr_0.95fr]">
-          {/* Left - Visual */}
-          <div className="order-2 md:order-1">
-            <div className="relative">
-              <div className="absolute -inset-5 hidden rounded-[36px] border border-white/40 bg-gradient-to-br from-white via-white/70 to-[#c8f1da]/40 shadow-soft-hero backdrop-blur-md animate-float-rev sm:block" />
-              <div className="relative overflow-hidden rounded-[28px] shadow-soft-hero">
-                <img
-                  src="https://img.freepik.com/free-vector/mobile-marketing-concept-illustration_114360-1527.jpg"
-                  alt="Digital Governance"
-                  className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.04]"
-                />
+          {/* ── Left: Illustration / visual ── */}
+          <div className="order-2 lg:order-1">
+            <div className="relative overflow-hidden rounded-3xl shadow-xl">
+              <img
+                src="https://img.freepik.com/free-vector/mobile-marketing-concept-illustration_114360-1527.jpg"
+                alt="Precision Engineering for Civic Good"
+                className="h-full w-full object-cover transition-transform duration-700 hover:scale-[1.03]"
+              />
+              {/* Overlay badge */}
+              <div className="absolute bottom-4 left-4 right-4 rounded-xl bg-[#064E3B]/90 px-4 py-3 backdrop-blur-sm">
+                <p className="text-xs font-semibold text-emerald-200 uppercase tracking-wide">Precision Engineering for Civic Good</p>
+                <ul className="mt-2 space-y-1">
+                  {["GPS Mapping", "Authentic Photos", "OTP Security"].map((item) => (
+                    <li key={item} className="flex items-center gap-2 text-xs text-white/80">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
 
-          {/* Right - Benefits List */}
-          <div className="order-1 space-y-6 md:order-2">
-            <div className="inline-flex items-center gap-3 rounded-full bg-white/70 px-4 py-2 text-xs font-medium text-govBlue shadow-soft-hero/40 backdrop-blur-md animate-float-slow sm:text-sm">
-              <span className="block h-2 w-2 rounded-full bg-govGreen animate-pulse-soft" />
-              Why citizens love FixMyArea
-            </div>
-
+          {/* ── Right: Benefits list ── */}
+          <div className="order-1 space-y-8 lg:order-2">
             <div>
-              <h2 className="text-2xl font-bold text-govText sm:text-3xl md:text-4xl">
-                Benefits of Using <span className="text-govBlue">FixMyArea</span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-[#064E3B]/10 px-4 py-1.5 text-xs font-semibold text-[#064E3B] sm:text-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#064E3B]" />
+                Why citizens love FixMyArea
+              </span>
+              <h2 className="mt-5 text-2xl font-bold text-gray-900 sm:text-3xl md:text-4xl">
+                Benefits of Using{" "}
+                <span className="text-[#064E3B]">FixMyArea</span>
               </h2>
-              <p className="mt-4 max-w-xl text-base text-gray-600 sm:text-lg">
-                Discover how the platform elevates transparency, speeds up resolutions, and keeps your community engaged.
+              <p className="mt-4 max-w-xl text-sm text-gray-500 sm:text-base">
+                Discover how the platform elevates transparency, speeds up
+                resolutions, and keeps your community engaged.
               </p>
             </div>
 
-            <div className="mt-6 space-y-5 sm:mt-8">
-              <div className="relative flex flex-col gap-4 rounded-2xl bg-white/85 p-5 shadow-xl backdrop-blur-md transition-transform duration-500 ease-out hover:-translate-y-1 hover:shadow-2xl sm:flex-row sm:items-start">
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-govGreen/20 text-2xl sm:h-14 sm:w-14 sm:text-3xl">
-                  🔍
+            <div className="grid gap-4 sm:grid-cols-2">
+              {BENEFITS.map(({ icon, title, desc }) => (
+                <div
+                  key={title}
+                  className="rounded-xl border border-white bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+                >
+                  <div className="mb-3 text-2xl">{icon}</div>
+                  <h3 className="mb-1.5 text-sm font-bold text-gray-900 sm:text-base">{title}</h3>
+                  <p className="text-xs text-gray-500 leading-relaxed sm:text-sm">{desc}</p>
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-govText sm:text-xl">Complete Transparency</h3>
-                  <p className="mt-1 text-sm text-gray-600 sm:text-base">
-                    See real-time status updates and know exactly what's happening with your complaint
-                  </p>
-                </div>
-              </div>
-
-              <div className="relative flex flex-col gap-4 rounded-2xl bg-white/85 p-5 shadow-xl backdrop-blur-md transition-transform duration-500 ease-out hover:-translate-y-1 hover:shadow-2xl sm:flex-row sm:items-start">
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-govBlue/20 text-2xl sm:h-14 sm:w-14 sm:text-3xl">
-                  🚀
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-govText sm:text-xl">Faster Action</h3>
-                  <p className="mt-1 text-sm text-gray-600 sm:text-base">
-                    Trending issues get prioritized, ensuring urgent problems are solved quickly
-                  </p>
-                </div>
-              </div>
-
-              <div className="relative flex flex-col gap-4 rounded-2xl bg-white/85 p-5 shadow-xl backdrop-blur-md transition-transform duration-500 ease-out hover:-translate-y-1 hover:shadow-2xl sm:flex-row sm:items-start">
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-govGreen/20 text-2xl sm:h-14 sm:w-14 sm:text-3xl">
-                  👥
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-govText sm:text-xl">Community Participation</h3>
-                  <p className="mt-1 text-sm text-gray-600 sm:text-base">
-                    Join forces with neighbors to highlight shared problems and demand action
-                  </p>
-                </div>
-              </div>
-
-              <div className="relative flex flex-col gap-4 rounded-2xl bg-white/85 p-5 shadow-xl backdrop-blur-md transition-transform duration-500 ease-out hover:-translate-y-1 hover:shadow-2xl sm:flex-row sm:items-start">
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-govBlue/20 text-2xl sm:h-14 sm:w-14 sm:text-3xl">
-                  📊
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-govText sm:text-xl">Digital Record</h3>
-                  <p className="mt-1 text-sm text-gray-600 sm:text-base">
-                    Maintain permanent records of all issues and resolutions for future reference
-                  </p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }
 
-export default BenefitsSection
+export default BenefitsSection;
