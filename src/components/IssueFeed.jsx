@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { db } from "../firebase/config";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import IssueCard from "./IssueCard";
+import { IssueCardSkeleton } from "./Skeleton";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function IssueFeed({ filterLocation, sort = "recent", category = "", variant = "full" }) {
   const [issues, setIssues] = useState([]);
@@ -90,29 +92,53 @@ export default function IssueFeed({ filterLocation, sort = "recent", category = 
     return list.sort((a, b) => timeOf(b.createdAt) - timeOf(a.createdAt));
   }, [issues, sort]);
 
-  if (loading) return <p className="text-gray-600">Loading...</p>;
-
-  if (error) {
-    return (
-      <div className="border border-red-200 rounded-lg bg-red-50 p-4 text-red-600">
-        {error}
-      </div>
-    );
-  }
-
-  if (!sortedIssues.length) {
-    return (
-      <div className="border border-gray-200 rounded-lg p-4 text-gray-600">
-        No record found.
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4">
-      {sortedIssues.map((issue) => (
-        <IssueCard key={issue.id} issue={issue} variant={variant} />
-      ))}
+      <AnimatePresence mode="popLayout">
+        {loading ? (
+          <motion.div
+            key="skeleton"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="space-y-4"
+          >
+            {[1, 2, 3].map((i) => (
+              <IssueCardSkeleton key={i} />
+            ))}
+          </motion.div>
+        ) : error ? (
+          <motion.div
+            key="error"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="border border-red-200 rounded-2xl bg-red-50 p-6 text-center"
+          >
+            <p className="text-red-600 font-medium">{error}</p>
+          </motion.div>
+        ) : !sortedIssues.length ? (
+          <motion.div
+            key="empty"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="border-2 border-dashed border-gray-200 rounded-2xl p-12 text-center"
+          >
+            <p className="text-gray-500 font-medium">No record found matching your filters.</p>
+          </motion.div>
+        ) : (
+          sortedIssues.map((issue) => (
+            <motion.div
+              key={issue.id}
+              layout
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.2 }}
+            >
+              <IssueCard issue={issue} variant={variant} />
+            </motion.div>
+          ))
+        )}
+      </AnimatePresence>
     </div>
   );
 }

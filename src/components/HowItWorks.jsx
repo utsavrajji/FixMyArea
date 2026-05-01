@@ -5,8 +5,8 @@ const STEPS = [
     title: "Click Photo",
     desc: "Capture the issue with your phone camera. Our app auto-extracts the GPS location from the photo.",
     color: "text-[#064E3B]",
-    bg: "bg-emerald-50",
-    border: "border-emerald-100",
+    bg: "bg-white",
+    border: "border-gray-100",
     numBg: "bg-[#064E3B]",
   },
   {
@@ -15,8 +15,8 @@ const STEPS = [
     title: "Community Verify",
     desc: "Neighbors see the issue in their Live Feed, upvote it and add verification comments to build credibility.",
     color: "text-amber-700",
-    bg: "bg-amber-50",
-    border: "border-amber-100",
+    bg: "bg-white",
+    border: "border-gray-100",
     numBg: "bg-amber-500",
   },
   {
@@ -25,15 +25,15 @@ const STEPS = [
     title: "Fast Action",
     desc: "Trending issues are escalated to the right government department and resolved with status updates.",
     color: "text-sky-700",
-    bg: "bg-sky-50",
-    border: "border-sky-100",
+    bg: "bg-white",
+    border: "border-gray-100",
     numBg: "bg-sky-600",
   },
 ];
 
 function HowItWorks() {
   return (
-    <section id="how-it-works" className="scroll-fade bg-white py-16 sm:py-20 lg:py-24">
+    <section id="how-it-works" className="scroll-fade bg-[#F3F4F6] py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
         {/* Header */}
         <div className="mb-14 text-center">

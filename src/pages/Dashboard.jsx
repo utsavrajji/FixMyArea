@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { auth, db } from "../firebase/config";
 import { signOut } from "firebase/auth";
 import {
@@ -10,7 +10,13 @@ import { onAuthStateChanged } from "firebase/auth";
 import MyIssues from "../components/MyIssues";
 import useUserProfile from "../hooks/useUserProfile";
 import Navbar from "../components/Navbar";
-import { Home, ClipboardList, Globe, Building2, Settings, LogOut, Inbox, MapPin, Map, AlertTriangle, Lock, Radio, Camera, Bell, CheckCircle, FileText, Pin, Lightbulb, Clock, RefreshCw, Layers, ShieldCheck, MapIcon, Car, Bus, Users, Wrench } from "lucide-react";
+import Footer from "../components/Footer";
+import Analytics from "../components/Analytics";
+import ContactMessages from "../components/ContactMessages";
+import ProfileView from "../components/ProfileView";
+import { IssueCardSkeleton, IssueRowSkeleton, StatCardSkeleton } from "../components/Skeleton";
+import { motion, AnimatePresence } from "framer-motion";
+import { Home, ClipboardList, Globe, Building2, Settings, LogOut, Inbox, MapPin, Map, AlertTriangle, Lock, Radio, Camera, Bell, CheckCircle, FileText, Pin, Lightbulb, Clock, RefreshCw, Layers, ShieldCheck, MapIcon, Car, Bus, Users, Wrench, Menu, Plus, Search, BarChart3, Mail, Shield, LayoutDashboard, User } from "lucide-react";
 
 /* ── helpers ─────────────────────────────────────────────────────────────── */
 function relTime(ts) {
@@ -136,11 +142,17 @@ export default function Dashboard() {
   const [communityFeed, setCommunityFeed] = useState([]);
 
   // UI state
-  const [activeNav,    setActiveNav]   = useState("dashboard");
+  const [searchParams] = useSearchParams();
+  const initialView = searchParams.get("view") || "dashboard";
+  const [activeNav, setActiveNav] = useState(initialView);
   const [sidebarOpen,  setSidebarOpen] = useState(false);
-  const [mounted,      setMounted]     = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => { setTimeout(() => setMounted(true), 80); }, []);
+  // Sync activeNav with URL search params
+  useEffect(() => {
+    const v = searchParams.get("view");
+    if (v && v !== activeNav) setActiveNav(v);
+  }, [searchParams]);
 
   /* Auth */
   useEffect(() => {
@@ -197,7 +209,8 @@ export default function Dashboard() {
     const q = query(collection(db, "issues"), orderBy("createdAt", "desc"), limit(6));
     const unsub = onSnapshot(q, snap => {
       setCommunityFeed(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    }, () => {});
+      setLoading(false);
+    }, () => setLoading(false));
     return () => unsub();
   }, []);
 
@@ -207,15 +220,23 @@ export default function Dashboard() {
   };
 
   /* Derived */
+  const isAdmin = profile?.role === "admin";
   const firstName   = profile?.name?.split(" ")[0] || user?.email?.split("@")[0] || "Citizen";
   const initials    = firstName.charAt(0).toUpperCase();
   const resolvePct  = myStats.total ? Math.round((myStats.resolved / myStats.total) * 100) : 0;
   const recentIssues = myIssues.slice(0, 4); // latest 4
 
-  const navItems = [
+  const navItems = isAdmin ? [
+    { id: "dashboard", icon: <LayoutDashboard className="w-5 h-5" />, label: "Management" },
+    { id: "analytics", icon: <BarChart3 className="w-5 h-5" />, label: "Analytics" },
+    { id: "messages",  icon: <Mail className="w-5 h-5" />, label: "Messages" },
+    { id: "community", icon: <Globe className="w-5 h-5" />, label: "Public Feed" },
+    { id: "profile",   icon: <User className="w-5 h-5" />, label: "My Profile" },
+  ] : [
     { id: "dashboard", icon: <Home className="w-5 h-5" />, label: "Dashboard" },
     { id: "myissues",  icon: <ClipboardList className="w-5 h-5" />, label: "My Issues",  badge: myStats.total },
     { id: "community", icon: <Globe className="w-5 h-5" />, label: "Community Feed" },
+    { id: "profile",   icon: <User className="w-5 h-5" />, label: "Profile Settings" },
   ];
 
   /* ─── Sidebar ─────────────────────────────────────────────────────────── */
@@ -225,17 +246,20 @@ export default function Dashboard() {
         <div className="p-5 border-b border-gray-100 flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-[#064E3B] rounded-xl flex items-center justify-center shadow-sm">
-              <Building2 className="w-5 h-5 text-white" />
+              {isAdmin ? <Shield className="w-5 h-5 text-white" /> : <Building2 className="w-5 h-5 text-white" />}
             </div>
             <div>
-              <p className="text-sm font-extrabold text-gray-900">FixMyArea</p>
-              <p className="text-[11px] text-gray-400 font-medium">Citizen Dashboard</p>
+              <p className="text-sm font-extrabold text-gray-900">{isAdmin ? "Admin Panel" : "FixMyArea"}</p>
+              <p className="text-[11px] text-gray-400 font-medium">{isAdmin ? "Platform Control" : "Citizen Dashboard"}</p>
             </div>
           </div>
         </div>
 
         {/* User pill */}
-        <div className="mx-3 mt-3 flex items-center gap-3 rounded-xl bg-gray-50 border border-gray-200 px-3 py-2.5">
+        <div 
+          onClick={() => { setActiveNav("profile"); setSidebarOpen(false); }}
+          className="mx-3 mt-3 flex items-center gap-3 rounded-xl bg-gray-50 border border-gray-200 px-3 py-2.5 cursor-pointer hover:bg-gray-100 transition-colors"
+        >
           <div className="w-8 h-8 rounded-full bg-[#064E3B] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
             {initials}
           </div>
@@ -254,9 +278,9 @@ export default function Dashboard() {
         </nav>
 
         <div className="p-3 border-t border-gray-100 flex-shrink-0 space-y-1">
-          <button onClick={() => navigate("/profile")}
+          <button onClick={() => { setActiveNav("profile"); setSidebarOpen(false); }}
             className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition">
-            <Settings className="w-5 h-5 flex-shrink-0" /> Profile Settings
+            <User className="w-5 h-5 flex-shrink-0" /> Profile Settings
           </button>
           <button onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition">
@@ -269,6 +293,28 @@ export default function Dashboard() {
 
   /* ─── Main content ────────────────────────────────────────────────────── */
   const renderMain = () => {
+    // Admin Views
+    if (isAdmin) {
+      if (activeNav === "analytics") return <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm"><Analytics /></div>;
+      if (activeNav === "messages") return <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm"><ContactMessages /></div>;
+      if (activeNav === "community") return renderCommunityFeed();
+      
+      // Default Admin View (All Issues - for now reusing community feed or a placeholder)
+      return (
+        <div className="space-y-6">
+          <div className="bg-[#064E3B] rounded-3xl p-8 text-white shadow-lg">
+             <h1 className="text-2xl font-black mb-2">Platform Overview</h1>
+             <p className="text-emerald-100 text-sm">Welcome to the administrative control center. Manage issues and monitor platform health.</p>
+             <div className="flex gap-4 mt-6">
+                <button onClick={() => navigate("/admin-dashboard")} className="bg-white text-[#064E3B] px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm">Go to Full Admin Panel →</button>
+             </div>
+          </div>
+          {renderCommunityFeed()}
+        </div>
+      );
+    }
+
+    /* Citizen Views */
 
     /* My Issues tab */
     if (activeNav === "myissues") return (
@@ -280,7 +326,7 @@ export default function Dashboard() {
             + Report New
           </button>
         </div>
-        <MyIssues />
+        <MyIssues list={myIssues} loading={false} />
       </div>
     );
 
@@ -299,30 +345,36 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="space-y-3">
-            {communityFeed.map(issue => (
-              <div key={issue.id} onClick={() => navigate(`/issue/${issue.id}`)}
-                className="flex items-start gap-4 p-3 rounded-xl border border-gray-100 hover:border-[#064E3B]/30 hover:bg-gray-50 cursor-pointer transition group">
-                {issue.photoURL
-                  ? <img src={issue.photoURL} className="w-14 h-14 rounded-xl object-cover flex-shrink-0" alt="" />
-                  : <div className="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0"><ClipboardList className="w-6 h-6 text-gray-400" /></div>
-                }
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2 mb-1">
-                    <p className="text-sm font-bold text-gray-800 line-clamp-1">{issue.title || issue.category}</p>
-                    <StatusBadge status={issue.status || "Pending"} />
+            {loading ? (
+              [1, 2, 3, 4].map(n => <IssueRowSkeleton key={n} />)
+            ) : (
+              communityFeed.map(issue => (
+                <div key={issue.id} onClick={() => navigate(`/issue/${issue.id}`)}
+                  className="flex items-start gap-4 p-3 rounded-xl border border-gray-100 hover:border-[#064E3B]/30 hover:bg-gray-50 cursor-pointer transition group">
+                  {issue.photoURL
+                    ? <img src={issue.photoURL} className="w-14 h-14 rounded-xl object-cover flex-shrink-0" alt="" />
+                    : <div className="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0"><ClipboardList className="w-6 h-6 text-gray-400" /></div>
+                  }
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <p className="text-sm font-bold text-gray-800 line-clamp-1">{issue.title || issue.category}</p>
+                      <StatusBadge status={issue.status || "Pending"} />
+                    </div>
+                    <p className="text-xs text-gray-500 truncate"><MapPin className="w-3 h-3 flex-shrink-0" /> {locationStr(issue.location) || "—"}</p>
+                    <p className="text-[10px] text-gray-400 mt-0.5">{relTime(issue.createdAt)}</p>
                   </div>
-                  <p className="text-xs text-gray-500 truncate"><MapPin className="w-3 h-3 flex-shrink-0" /> {locationStr(issue.location) || "—"}</p>
-                  <p className="text-[10px] text-gray-400 mt-0.5">{relTime(issue.createdAt)}</p>
+                  <svg className="w-4 h-4 text-gray-300 group-hover:text-[#064E3B] flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/>
+                  </svg>
                 </div>
-                <svg className="w-4 h-4 text-gray-300 group-hover:text-[#064E3B] flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/>
-                </svg>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         )}
       </div>
     );
+
+    if (activeNav === "profile") return <ProfileView profile={profile} />;
 
     /* ── Dashboard home ── */
     return (
@@ -344,20 +396,24 @@ export default function Dashboard() {
 
         {/* Stat cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { icon: <ClipboardList className="w-5 h-5" />, label: "Total Reports", val: myStats.total,    bg: "bg-white border-gray-200",         text: "text-gray-900" },
-            { icon: <Clock className="w-5 h-5" />, label: "Pending",        val: myStats.pending,  bg: "bg-amber-50 border-amber-200",     text: "text-amber-700" },
-            { icon: <RefreshCw className="w-5 h-5" />, label: "In Progress",    val: myStats.active,   bg: "bg-blue-50 border-blue-200",       text: "text-blue-700" },
-            { icon: <CheckCircle className="w-5 h-5" />, label: "Resolved",       val: myStats.resolved, bg: "bg-emerald-50 border-emerald-200", text: "text-emerald-700" },
-          ].map(s => (
-            <div key={s.label} className={`rounded-2xl border p-4 shadow-sm ${s.bg}`}>
-              <div className="flex items-start justify-between mb-2">
-                <span className="text-lg">{s.icon}</span>
-                <span className={`text-3xl font-black tabular-nums ${s.text}`}>{s.val}</span>
+          {loading ? (
+            [1, 2, 3, 4].map(n => <StatCardSkeleton key={n} />)
+          ) : (
+            [
+              { icon: <ClipboardList className="w-5 h-5" />, label: "Total Reports", val: myStats.total,    bg: "bg-white border-gray-200",         text: "text-gray-900" },
+              { icon: <Clock className="w-5 h-5" />, label: "Pending",        val: myStats.pending,  bg: "bg-amber-50 border-amber-200",     text: "text-amber-700" },
+              { icon: <RefreshCw className="w-5 h-5" />, label: "In Progress",    val: myStats.active,   bg: "bg-blue-50 border-blue-200",       text: "text-blue-700" },
+              { icon: <CheckCircle className="w-5 h-5" />, label: "Resolved",       val: myStats.resolved, bg: "bg-emerald-50 border-emerald-200", text: "text-emerald-700" },
+            ].map(s => (
+              <div key={s.label} className={`rounded-2xl border p-4 shadow-sm ${s.bg}`}>
+                <div className="flex items-start justify-between mb-2">
+                  <span className="text-lg">{s.icon}</span>
+                  <span className={`text-3xl font-black tabular-nums ${s.text}`}>{s.val}</span>
+                </div>
+                <p className={`text-[10px] font-bold uppercase tracking-widest ${s.text} opacity-60`}>{s.label}</p>
               </div>
-              <p className={`text-[10px] font-bold uppercase tracking-widest ${s.text} opacity-60`}>{s.label}</p>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         {/* About FixMyArea — Hero Banner */}
@@ -367,7 +423,7 @@ export default function Dashboard() {
           <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center gap-6">
             <div className="flex-1">
               <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3 py-1 mb-3">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
                 <span className="text-emerald-200 text-[11px] font-bold uppercase tracking-widest">FixMyArea Platform</span>
               </div>
               <h2 className="text-white text-xl sm:text-2xl font-extrabold leading-tight mb-2">
@@ -546,110 +602,104 @@ export default function Dashboard() {
 
   return (
     <>
-      <Navbar />
-      <div className="min-h-screen bg-[#F3F4F6]" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <div className="flex flex-col min-h-screen bg-[#F3F4F6]" style={{ fontFamily: "'Inter', sans-serif" }}>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-      {/* Mobile topbar */}
-      <header className="lg:hidden sticky top-0 z-40 flex h-14 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm">
-        <button onClick={() => setSidebarOpen(true)}>
-          <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
-          </svg>
-        </button>
-        <span className="text-sm font-extrabold text-gray-900">FixMyArea</span>
-        <div className="w-8 h-8 rounded-full bg-[#064E3B] flex items-center justify-center text-white text-sm font-bold">
-          {initials}
-        </div>
-      </header>
+        <Navbar />
 
-      <div className="flex max-w-[1440px] mx-auto">
+        <div className="flex-1 flex flex-col">
 
-        {/* Mobile sidebar overlay */}
-        {sidebarOpen && (
-          <div className="lg:hidden fixed inset-0 z-50 flex">
-            <div className="fixed inset-0 bg-black/40" onClick={() => setSidebarOpen(false)} />
-            <aside className="relative z-10 w-64 bg-white flex flex-col h-full border-r border-gray-200 shadow-xl">
+
+          <div className="flex-1 flex w-full max-w-[1440px] mx-auto relative">
+            {/* Mobile sidebar overlay */}
+            {sidebarOpen && (
+              <div className="lg:hidden fixed inset-0 z-50 flex">
+                <div className="fixed inset-0 bg-black/40" onClick={() => setSidebarOpen(false)} />
+                <aside className="relative z-10 w-64 bg-white flex flex-col h-full border-r border-gray-200 shadow-xl">
+                  <SidebarContent />
+                </aside>
+              </div>
+            )}
+
+            {/* Desktop sidebar */}
+            <aside className="hidden lg:flex flex-col w-64 flex-shrink-0 bg-white border-r border-gray-200">
               <SidebarContent />
             </aside>
-          </div>
-        )}
 
-        {/* Desktop sidebar */}
-        <aside className="hidden lg:flex flex-col w-64 flex-shrink-0 min-h-screen bg-white border-r border-gray-200">
-          <SidebarContent />
-        </aside>
+              {/* Centre + Right */}
+              <div className="flex-1 min-w-0 flex flex-col xl:flex-row">
+              <main className="flex-1 p-4 sm:p-6">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeNav}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      {renderMain()}
+                    </motion.div>
+                  </AnimatePresence>
+                </main>
 
-        {/* Centre + Right */}
-        <div className="flex-1 min-w-0 flex flex-col xl:flex-row">
-
-          <main className={`flex-1 p-4 sm:p-6 transition-all duration-500 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-            {renderMain()}
-          </main>
-
-          {/* Right sidebar — only on dashboard tab, xl screens */}
-          {activeNav === "dashboard" && (
-            <aside className="hidden xl:flex flex-col w-72 flex-shrink-0 border-l border-gray-200 bg-white p-5 space-y-5 min-h-screen">
-
-              <div>
-                <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">Community Activity</h3>
-                <div className="space-y-2">
-                  {communityFeed.slice(0, 4).map((issue, i) => (
-                    <div key={issue.id}
-                      onClick={() => navigate(`/issue/${issue.id}`)}
-                      className="flex items-start gap-2.5 cursor-pointer group p-2 rounded-xl hover:bg-gray-50 transition -mx-2">
-                      {issue.photoURL
-                        ? <img src={issue.photoURL} className="w-9 h-9 rounded-lg object-cover flex-shrink-0" alt="" />
-                        : <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm flex-shrink-0 ${
-                            ["bg-emerald-100", "bg-blue-100", "bg-amber-100", "bg-violet-100"][i % 4]
-                          }`}>{["🟢","🔵","🟡","🟣"][i % 4]}</div>
-                      }
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold text-gray-800 line-clamp-1 group-hover:text-[#064E3B] transition">
-                          {issue.title || issue.category}
-                        </p>
-                        <p className="text-[10px] text-gray-400 mt-0.5">
-                          {relTime(issue.createdAt)}{locationStr(issue.location) ? ` · ${locationStr(issue.location).split(",")[0]}` : ""}
-                        </p>
-                      </div>
+              {/* Right sidebar — only on dashboard tab, xl screens */}
+              {activeNav === "dashboard" && (
+                <aside className="hidden xl:flex flex-col w-72 flex-shrink-0 border-l border-gray-200 bg-white p-5 space-y-5">
+                  <div>
+                    <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">Community Activity</h3>
+                    <div className="space-y-2">
+                      {communityFeed.slice(0, 4).map((issue, i) => (
+                        <div key={issue.id}
+                          onClick={() => navigate(`/issue/${issue.id}`)}
+                          className="flex items-start gap-2.5 cursor-pointer group p-2 rounded-xl hover:bg-gray-50 transition -mx-2">
+                          {issue.photoURL
+                            ? <img src={issue.photoURL} className="w-9 h-9 rounded-lg object-cover flex-shrink-0" alt="" />
+                            : <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm flex-shrink-0 ${
+                                ["bg-emerald-100", "bg-blue-100", "bg-amber-100", "bg-violet-100"][i % 4]
+                              }`}>{["🟢","🔵","🟡","🟣"][i % 4]}</div>
+                          }
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-semibold text-gray-800 line-clamp-1 group-hover:text-[#064E3B] transition">
+                              {issue.title || issue.category}
+                            </p>
+                            <p className="text-[10px] text-gray-400 mt-0.5">
+                              {relTime(issue.createdAt)}{locationStr(issue.location) ? ` · ${locationStr(issue.location).split(",")[0]}` : ""}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                  {communityFeed.length === 0 && (
-                    <p className="text-xs text-gray-400 text-center py-4">No recent activity</p>
-                  )}
-                </div>
-                <button onClick={() => navigate("/local-issues")}
-                  className="mt-2 w-full text-center text-xs font-semibold text-[#064E3B] underline underline-offset-2 hover:text-[#053d2f]">
-                  Browse all issues →
-                </button>
-              </div>
+                    <button onClick={() => navigate("/local-issues")}
+                      className="mt-2 w-full text-center text-xs font-semibold text-[#064E3B] underline underline-offset-2 hover:text-[#053d2f]">
+                      Browse all issues →
+                    </button>
+                  </div>
 
-              {/* Mini donut */}
-              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
-                <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">My Issue Breakdown</h3>
-                <DonutMini resolved={myStats.resolved} active={myStats.active} pending={myStats.pending} />
-              </div>
+                  <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
+                    <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">My Issue Breakdown</h3>
+                    <DonutMini resolved={myStats.resolved} active={myStats.active} pending={myStats.pending} />
+                  </div>
 
-              {/* Quick links */}
-              <div>
-                <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-2">Quick Links</h3>
-                {[
-                  { icon: <FileText className="w-5 h-5" />, label: "Report Issue",  path: "/report-issue" },
-                  { icon: <Globe className="w-5 h-5" />, label: "Browse Issues", path: "/local-issues" },
-                  { icon: "👤", label: "My Profile",    path: "/profile" },
-                  { icon: "📞", label: "Contact Us",    path: "/contact" },
-                ].map(({ icon, label, path }) => (
-                  <button key={label} onClick={() => navigate(path)}
-                    className="w-full flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-100 transition text-left">
-                    <span>{icon}</span>{label}
-                  </button>
-                ))}
-              </div>
-            </aside>
-          )}
+                  <div>
+                    <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-2">Quick Links</h3>
+                    {[
+                      { icon: <FileText className="w-5 h-5" />, label: "Report Issue",  path: "/report-issue" },
+                      { icon: <Globe className="w-5 h-5" />, label: "Browse Issues", path: "/local-issues" },
+                      { icon: "📞", label: "Contact Us",    path: "/contact" },
+                    ].map(({ icon, label, path }) => (
+                      <button key={label} onClick={() => navigate(path)}
+                        className="w-full flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-100 transition text-left">
+                        <span>{icon}</span>{label}
+                      </button>
+                    ))}
+                  </div>
+                </aside>
+              )}
+            </div>
+          </div>
         </div>
+        <Footer />
       </div>
-    </div>
     </>
   );
 }

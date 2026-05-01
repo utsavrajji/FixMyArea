@@ -3,8 +3,10 @@ import { auth, db } from "../firebase/config";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import LoadingOverlay from "../components/LoadingOverlay";
 
 function generateCaptcha() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -42,15 +44,32 @@ function Register() {
         body: JSON.stringify({ email: form.email, name: form.name, otp })
       });
       const data = await response.json();
-      if (data.success) { setOtpSent(true); setError(""); alert(`OTP sent to ${form.email}`); }
-      else setError(data.message || "Failed to send OTP.");
-    } catch (err) { setError("Failed to send OTP. Please check your connection."); }
+      if (data.success) { 
+        setOtpSent(true); 
+        setError(""); 
+        toast.success(`OTP sent to ${form.email}`); 
+      }
+      else {
+        setError(data.message || "Failed to send OTP.");
+        toast.error(data.message || "Failed to send OTP.");
+      }
+    } catch (err) { 
+      setError("Failed to send OTP. Please check your connection."); 
+      toast.error("Failed to send OTP. Please check your connection.");
+    }
     finally { setOtpLoading(false); }
   };
 
   const verifyOtp = () => {
-    if (enteredOtp === generatedOtp) { setIsEmailVerified(true); setError(""); alert("Email Verified Successfully!"); }
-    else setError("Incorrect OTP. Please try again.");
+    if (enteredOtp === generatedOtp) { 
+      setIsEmailVerified(true); 
+      setError(""); 
+      toast.success("Email Verified Successfully!"); 
+    }
+    else {
+      setError("Incorrect OTP. Please try again.");
+      toast.error("Incorrect OTP. Please try again.");
+    }
   };
 
   const validate = () => {
@@ -73,13 +92,35 @@ function Register() {
         uid: user.uid, name: form.name, phone: form.phone, email: form.email,
         role: "citizen", createdAt: new Date().toISOString(), isVerified: true,
       });
-      alert("Registration successful! Redirecting to dashboard...");
+      toast.success("Registration successful! Welcome to FixMyArea.");
       navigate("/dashboard");
     } catch (err) {
-      if (err.code === "auth/email-already-in-use") setError("This email is already registered. Please log in.");
-      else setError(err.message || "Registration failed. Please try again.");
+      console.error("💥 REGISTER ERROR:", err);
+      setLoading(false); // Only stop loading if there is an error
+      
+      let errorMessage = "Registration failed. Please try again.";
+      
+      switch (err.code) {
+        case "auth/email-already-in-use":
+          errorMessage = "This email is already registered. Please login or use a different email.";
+          break;
+        case "auth/invalid-email":
+          errorMessage = "The email address is not valid.";
+          break;
+        case "auth/weak-password":
+          errorMessage = "The password is too weak.";
+          break;
+        default:
+          errorMessage = err.message || "Registration failed. Please try again.";
+      }
+      
+      setError(errorMessage);
+      toast.error(errorMessage, { 
+        duration: 6000,
+        icon: '⚠️'
+      });
       refreshCaptcha();
-    } finally { setLoading(false); }
+    }
   };
 
   const inputClass = "w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 shadow-sm transition-all focus:border-[#064E3B] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/15";
@@ -87,6 +128,7 @@ function Register() {
   return (
     <>
       <Navbar />
+      {loading && <LoadingOverlay message="Creating your account..." />}
       <div className="min-h-screen bg-[#F3F4F6] px-4 py-12">
         <div className="mx-auto w-full max-w-lg">
           {/* Badge */}

@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -12,8 +13,11 @@ import LocalIssues from "./pages/LocalIssues";
 import IssueDetail from "./pages/IssueDetail";
 import AdminDashboard from "./pages/AdminDashboard";
 import ContactUs from "./pages/ContactUs";
-import Profile from "./pages/Profile";
 import AIChatbot from "./components/AIChatbot";
+import Support from "./pages/Support";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsConditions from "./pages/TermsConditions";
+import FAQs from "./pages/FAQs";
 
 function App() {
   return (
@@ -31,10 +35,14 @@ function App() {
         <Route path="/admin/issue/:id" element={<IssueDetailPage />} />
         <Route path="/admin" element={<AdminGate />} />
         <Route path="/history" element={<ResolvedIssues />} />
-        <Route path="/profile" element={<Profile />} />
         <Route path="/contact" element={<ContactUs />} />
+        <Route path="/support" element={<Support />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsConditions />} />
+        <Route path="/faqs" element={<FAQs />} />
       </Routes>
       <AIChatbot />
+      <Toaster position="top-center" reverseOrder={false} />
     </>
   );
 }

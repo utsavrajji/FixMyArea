@@ -3,8 +3,10 @@ import { auth, db } from "../firebase/config";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import LoadingOverlay from "../components/LoadingOverlay";
 
 function generateCaptcha() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -35,18 +37,45 @@ function Login() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
-      if (!userDoc.exists()) { setError("User profile not found."); await auth.signOut(); refreshCaptcha(); return; }
+      if (!userDoc.exists()) { 
+        const errorMsg = "User profile not found.";
+        setError(errorMsg); 
+        toast.error(errorMsg);
+        await auth.signOut(); 
+        refreshCaptcha(); 
+        return; 
+      }
       const role = userDoc.data().role || "citizen";
+      toast.success("Login successful! Welcome back.");
       if (role === "admin") navigate("/admin-dashboard");
       else navigate("/dashboard");
     } catch (err) {
-      if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
-        setError("Invalid email or password.");
-      } else {
-        setError(err.message || "Login failed. Please try again.");
+      setLoading(false);
+      let errorMessage = "Login failed. Please try again.";
+      
+      switch (err.code) {
+        case "auth/invalid-credential":
+        case "auth/wrong-password":
+        case "auth/user-not-found":
+          errorMessage = "Invalid email or password. Please try again.";
+          break;
+        case "auth/user-disabled":
+          errorMessage = "This account has been disabled.";
+          break;
+        case "auth/too-many-requests":
+          errorMessage = "Too many failed attempts. Please try again later.";
+          break;
+        default:
+          errorMessage = err.message || "Login failed. Please try again.";
       }
+      
+      setError(errorMessage);
+      toast.error(errorMessage, {
+        duration: 4000,
+        icon: '🔒'
+      });
       refreshCaptcha();
-    } finally { setLoading(false); }
+    }
   };
 
   const inputClass = "w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 shadow-sm transition-all focus:border-[#064E3B] focus:outline-none focus:ring-2 focus:ring-[#064E3B]/15";
@@ -54,6 +83,7 @@ function Login() {
   return (
     <>
       <Navbar />
+      {loading && <LoadingOverlay message="Signing you in..." />}
       <div className="min-h-screen bg-[#F3F4F6] flex items-center justify-center px-4 py-16">
         <div className="w-full max-w-md">
           {/* Badge */}

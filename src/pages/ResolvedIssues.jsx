@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { db } from "../firebase/config";
 import { collection, query, where, getDocs } from "firebase/firestore";
+import Navbar from "../components/Navbar";
 import HistoryCard from "../components/HistoryCard";
 import Footer from "../components/Footer";
 
@@ -27,6 +28,7 @@ export default function ResolvedIssues() {
 
   return (
     <>
+      <Navbar />
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-4xl mx-auto py-8 px-3">
           <h1 className="text-2xl font-bold text-center mb-6 text-green-800">Resolved Issues / History</h1>

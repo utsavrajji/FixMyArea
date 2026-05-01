@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const CAROUSEL_IMAGES = [
   "/assets/hero/img1.jpg",
@@ -13,6 +14,32 @@ const STATS = [
   { value: "5,000+", label: "Active Neighbors" },
   { value: "48", label: "Cities Covered" },
 ];
+
+function Counter({ value }) {
+  const [count, setCount] = useState(0);
+  const target = parseInt(value.replace(/,/g, ""));
+  const suffix = value.replace(/[0-9,]/g, "");
+
+  useEffect(() => {
+    let start = 0;
+    const duration = 2000;
+    const increment = target / (duration / 16);
+    
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= target) {
+        setCount(target);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(start));
+      }
+    }, 16);
+
+    return () => clearInterval(timer);
+  }, [target]);
+
+  return <span>{count.toLocaleString()}{suffix}</span>;
+}
 
 function HeroSection() {
   const navigate = useNavigate();
@@ -51,25 +78,45 @@ function HeroSection() {
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center gap-10 px-4 py-16 text-center sm:px-6 sm:py-20 lg:py-28 lg:px-10">
 
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-white/10 px-4 py-1.5 text-xs font-semibold text-emerald-200 backdrop-blur-sm sm:text-sm">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-white/10 px-4 py-1.5 text-xs font-semibold text-emerald-200 backdrop-blur-sm sm:text-sm"
+        >
           <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
           Empowering citizen-led change
-        </div>
+        </motion.div>
 
         {/* Headline */}
         <div className="space-y-4">
-          <h1 className="text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
+          >
             Your Voice for a{" "}
             <span className="text-emerald-300">Better Locality</span>
-          </h1>
-          <p className="mx-auto max-w-2xl text-sm text-white/75 sm:text-base md:text-lg lg:text-xl leading-relaxed">
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            className="mx-auto max-w-2xl text-sm text-white/75 sm:text-base md:text-lg lg:text-xl leading-relaxed"
+          >
             Report local problems, let your community verify them, and watch the
             government take action — all in one transparent platform.
-          </p>
+          </motion.p>
         </div>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+          className="flex flex-col gap-3 sm:flex-row sm:gap-4"
+        >
           <a
             href="/login"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-[#064E3B] shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:px-8 sm:py-3.5 sm:text-base"
@@ -89,7 +136,7 @@ function HeroSection() {
             </svg>
             View Live Feed
           </button>
-        </div>
+        </motion.div>
 
         {/* Slide indicators */}
         <div className="flex gap-2">
@@ -106,16 +153,31 @@ function HeroSection() {
       </div>
 
       {/* ── Stats Bar ── */}
-      <div className="relative z-10 border-t border-white/10 bg-[#053d2f]">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, delay: 0.6 }}
+        className="relative z-10 border-t border-white/10 bg-[#053d2f]"
+      >
         <div className="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-white/10 px-4 sm:grid-cols-4 sm:px-6 lg:px-10">
-          {STATS.map(({ value, label }) => (
-            <div key={label} className="flex flex-col items-center justify-center gap-0.5 px-4 py-5">
-              <span className="text-2xl font-extrabold text-white sm:text-3xl">{value}</span>
+          {STATS.map(({ value, label }, index) => (
+            <motion.div 
+              key={label}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.8 + index * 0.1 }}
+              className="flex flex-col items-center justify-center gap-0.5 px-4 py-5"
+            >
+              <span className="text-2xl font-extrabold text-white sm:text-3xl">
+                <Counter value={value} />
+              </span>
               <span className="text-xs font-medium text-white/55 sm:text-sm">{label}</span>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

@@ -3,10 +3,10 @@ import { db, auth } from "../firebase/config";
 import { collection, query, where, onSnapshot, orderBy } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
+import { IssueCardSkeleton } from "./Skeleton";
 
-export default function MyIssues() {
+export default function MyIssues({ list: propList, loading: propLoading }) {
   const [currentUser, setCurrentUser] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true);
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("All");
@@ -14,51 +14,43 @@ export default function MyIssues() {
 
   const statusOptions = ["All", "Pending", "Under Review", "In Progress", "Resolved", "Rejected"];
 
-  // Step 1: Wait for auth to load
+  // Use props if available
   useEffect(() => {
-    const unsubAuth = onAuthStateChanged(auth, (user) => {
-      console.log("Auth state changed:", user?.uid);
-      setCurrentUser(user);
-      setAuthLoading(false);
-    });
-    return () => unsubAuth();
-  }, []);
-
-  // Step 2: Fetch issues when user is ready
-  useEffect(() => {
-    if (authLoading) return; // Wait for auth
-    if (!currentUser) {
-      setList([]);
-      setLoading(false);
-      return;
+    if (propList) {
+      setList(propList);
+      setLoading(propLoading || false);
     }
+  }, [propList, propLoading]);
 
-    console.log("Fetching issues for user:", currentUser.uid);
-    setLoading(true);
+  // Fallback fetching only if propList is not provided
+  useEffect(() => {
+    if (propList) return;
 
-    const q = query(
-      collection(db, "issues"),
-      where("userId", "==", currentUser.uid),
-      orderBy("createdAt", "desc")
-    );
-
-    const unsubSnapshot = onSnapshot(
-      q,
-      (snap) => {
-        console.log("Issues fetched:", snap.size);
-        const issues = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-        setList(issues);
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching issues:", error);
+    const unsubAuth = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      if (!user) {
         setList([]);
         setLoading(false);
       }
-    );
+    });
 
-    return () => unsubSnapshot();
-  }, [currentUser, authLoading]);
+    if (currentUser) {
+      setLoading(true);
+      const q = query(
+        collection(db, "issues"),
+        where("userId", "==", currentUser.uid),
+        orderBy("createdAt", "desc")
+      );
+      const unsubSnapshot = onSnapshot(q, (snap) => {
+        setList(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+        setLoading(false);
+      }, () => setLoading(false));
+      return () => unsubSnapshot();
+    }
+
+    return () => unsubAuth();
+  }, [currentUser, propList]);
+
 
   const filteredList = filter === "All" 
     ? list 
@@ -75,20 +67,9 @@ export default function MyIssues() {
     return colors[status] || "bg-gray-100 text-gray-800 border-gray-300";
   };
 
-  // Auth loading state
-  if (authLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading user data...</p>
-        </div>
-      </div>
-    );
-  }
-
   // Not logged in
-  if (!currentUser) {
+  if (!propList && !currentUser && !loading) {
+
     return (
       <div className="text-center py-12 bg-gradient-to-br from-red-50 to-orange-50 rounded-xl border-2 border-dashed border-red-300">
         <span className="text-6xl mb-4 block">🔒</span>
@@ -108,9 +89,9 @@ export default function MyIssues() {
   if (loading) {
     return (
       <div className="space-y-4">
-        <LoadingSkeleton />
-        <LoadingSkeleton />
-        <LoadingSkeleton />
+        <IssueCardSkeleton />
+        <IssueCardSkeleton />
+        <IssueCardSkeleton />
       </div>
     );
   }
@@ -255,27 +236,6 @@ export default function MyIssues() {
           overflow: hidden;
         }
       `}</style>
-    </div>
-  );
-}
-
-// Loading Skeleton Component
-function LoadingSkeleton() {
-  return (
-    <div className="bg-white border-2 border-gray-200 rounded-2xl p-5 shadow-md animate-pulse">
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="w-full md:w-32 h-32 bg-gray-200 rounded-xl flex-shrink-0" />
-        <div className="flex-1 space-y-3">
-          <div className="h-6 bg-gray-200 rounded w-3/4" />
-          <div className="h-4 bg-gray-200 rounded w-full" />
-          <div className="h-4 bg-gray-200 rounded w-2/3" />
-          <div className="flex gap-3">
-            <div className="h-4 bg-gray-200 rounded w-20" />
-            <div className="h-4 bg-gray-200 rounded w-24" />
-            <div className="h-4 bg-gray-200 rounded w-16" />
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

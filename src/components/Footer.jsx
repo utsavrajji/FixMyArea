@@ -58,14 +58,21 @@ function Footer() {
 
           {/* Col 3 – Support */}
           <div className="space-y-4">
-            <h3 className="text-sm font-bold uppercase tracking-widest text-white/40">Support</h3>
+            <h3 className="text-sm font-bold uppercase tracking-widest text-white/40">
+              <Link to="/support" className="hover:text-emerald-300 transition-colors">Support</Link>
+            </h3>
             <ul className="space-y-2.5 text-sm text-white/70">
-              {["Contact Us", "Privacy Policy", "Terms & Conditions", "FAQs"].map((item) => (
-                <li key={item}>
-                  <a href="#" className="flex items-center gap-1.5 transition hover:text-white">
+              {[
+                { label: "Contact Us", to: "/contact" },
+                { label: "Privacy Policy", to: "/privacy" },
+                { label: "Terms & Conditions", to: "/terms" },
+                { label: "FAQs", to: "/faqs" },
+              ].map(({ label, to }) => (
+                <li key={label}>
+                  <Link to={to} className="flex items-center gap-1.5 transition hover:text-white">
                     <span className="text-emerald-400">›</span>
-                    {item}
-                  </a>
+                    {label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -77,12 +84,12 @@ function Footer() {
             <div className="space-y-3 text-sm text-white/60 leading-relaxed">
               <p>4th Floor, NeGD, Electronics Niketan,<br />6 CGO Complex, Lodhi Road,<br />New Delhi – 110003, India</p>
               <a
-                href="mailto:support-fixmyarea@digitalindia.gov.in"
+                href="mailto:fixmyareas@gmail.com"
                 className="block break-words text-emerald-300 underline-offset-2 hover:underline"
               >
-                support-fixmyarea@digitalindia.gov.in
+                fixmyareas@gmail.com
               </a>
-              <p>(011) 24307714</p>
+              <p>+917634923630</p>
               <p className="text-xs text-white/40">Mon–Fri · 9:00 AM to 5:30 PM</p>
             </div>
           </div>

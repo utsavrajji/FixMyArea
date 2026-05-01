@@ -40,14 +40,11 @@ function Navbar() {
   };
 
   const isLanding = location.pathname === "/";
-
-  const linkClass =
-    "text-sm font-medium transition-colors duration-200 hover:text-emerald-300";
-  const activeLinkClass = "text-emerald-300 font-semibold";
+  const hideLinks = ["/dashboard", "/admin", "/admin-dashboard", "/report-issue", "/history", "/login", "/register", "/forgot-password", "/issue"].some(p => location.pathname.startsWith(p));
 
   return (
     <nav
-      className={`sticky top-0 z-50 transition-all duration-300 ${
+      className={`sticky top-0 z-50 ${
         scrolled
           ? "bg-[#064E3B] shadow-lg"
           : isLanding
@@ -55,92 +52,65 @@ function Navbar() {
           : "bg-[#064E3B]"
       }`}
     >
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20">
-            <img src="/assets/logo.png" alt="FixMyArea" className="h-6 w-6 drop-shadow-sm" />
+      <div className="relative mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+        
+        {/* Left Side: Menu Toggle */}
+        <div className="flex items-center gap-2 min-w-[120px]">
+          <button
+            type="button"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/30 text-white hover:bg-white/10"
+            onClick={() => setIsMenuOpen((prev) => !prev)}
+            aria-expanded={isMenuOpen}
+            aria-label="Toggle navigation menu"
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              {isMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 5.25h16.5M3.75 12h16.5M3.75 18.75h16.5" />
+              )}
+            </svg>
+          </button>
+        </div>
+
+        {/* Center: Logo & Name (Always Centered) */}
+        <Link to="/" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2.5 z-10">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow-sm">
+            <img src="/assets/logo.png" alt="FixMyArea" className="h-6 w-6 object-contain" />
           </div>
           <span className="text-xl font-extrabold tracking-wide text-white">
             Fix<span className="text-emerald-300">My</span>Area
           </span>
         </Link>
 
-        {/* Desktop Links */}
-        <div className="hidden items-center gap-8 lg:flex">
-          {user ? (
-            <Link to="/dashboard" className={`${linkClass} ${location.pathname === "/dashboard" ? activeLinkClass : "text-white/80"}`}>
-              Dashboard
-            </Link>
-          ) : (
-            <Link to="/" className={`${linkClass} ${location.pathname === "/" ? activeLinkClass : "text-white/80"}`}>
-              Home
-            </Link>
+        {/* Right Side: Action Buttons / Desktop Links */}
+        <div className="flex items-center justify-end gap-6 min-w-[120px]">
+          {!hideLinks && (
+            <div className="hidden items-center gap-6 lg:flex">
+              {user ? (
+                <Link to="/dashboard" className="text-sm font-medium text-white/80 transition hover:text-emerald-300">Dashboard</Link>
+              ) : (
+                <Link to="/" className="text-sm font-medium text-white/80 transition hover:text-emerald-300">Home</Link>
+              )}
+              <Link to="/local-issues" className="text-sm font-medium text-white/80 transition hover:text-emerald-300">Feed</Link>
+              <Link to="/report-issue" className="text-sm font-medium text-white/80 transition hover:text-emerald-300">Report</Link>
+            </div>
           )}
-          <Link to="/local-issues" className={`${linkClass} ${location.pathname === "/local-issues" ? activeLinkClass : "text-white/80"}`}>
-            Feed
-          </Link>
-          <Link to={user ? "/report-issue" : "/login"} className={`${linkClass} ${location.pathname === "/report-issue" ? activeLinkClass : "text-white/80"}`}>
-            Report
-          </Link>
-        </div>
-
-        {/* Desktop Buttons */}
-        <div className="hidden items-center gap-3 lg:flex">
-          {user ? (
-            <>
-              <button
-                onClick={() => handleNavigation("/profile")}
-                className="rounded-lg border border-white/30 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-white/10"
-              >
-                Profile
-              </button>
-              <button
-                onClick={handleLogout}
-                className="rounded-lg bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-100 shadow-md transition-all duration-200 hover:bg-red-500/20 hover:text-white"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => handleNavigation("/login")}
-                className="rounded-lg border border-white/30 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-white/10"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => handleNavigation("/register")}
-                className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-[#064E3B] shadow-md transition-all duration-200 hover:bg-emerald-50 hover:shadow-lg"
-              >
-                Get Started
-              </button>
-            </>
+          
+          {!user && (
+            <button
+              onClick={() => handleNavigation("/register")}
+              className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-[#064E3B] shadow-md hover:bg-emerald-50 hover:shadow-lg"
+            >
+              Get Started
+            </button>
           )}
         </div>
-
-        {/* Mobile Hamburger */}
-        <button
-          type="button"
-          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/30 text-white transition hover:bg-white/10 lg:hidden"
-          onClick={() => setIsMenuOpen((prev) => !prev)}
-          aria-expanded={isMenuOpen}
-          aria-label="Toggle navigation menu"
-        >
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            {isMenuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 5.25h16.5M3.75 12h16.5M3.75 18.75h16.5" />
-            )}
-          </svg>
-        </button>
       </div>
 
-  {/* Mobile Menu */}
+      {/* Navigation Menu (Dropdown) */}
       {isMenuOpen && (
-        <div className="border-t border-white/10 bg-[#053d2f] px-4 py-4 lg:hidden">
+        <div className="border-t border-white/10 bg-[#053d2f] px-4 py-4 shadow-xl">
           <div className="flex flex-col gap-1">
             {user ? (
               <Link to="/dashboard" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
@@ -157,33 +127,35 @@ function Navbar() {
             <Link to={user ? "/report-issue" : "/login"} className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
               Report Issue
             </Link>
-            <div className="mt-3 flex flex-col gap-2">
+            
+            <div className="mt-3 pt-3 border-t border-white/10 flex flex-col gap-2">
               {user ? (
                 <>
-                  <button
-                    onClick={() => handleNavigation("/profile")}
-                    className="rounded-lg border border-white/30 px-3 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
+                  <Link 
+                    to="/dashboard?view=profile" 
+                    className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10 flex items-center gap-2"
+                    onClick={() => setIsMenuOpen(false)}
                   >
-                    Profile
-                  </button>
+                    <span className="opacity-70">👤</span> Profile Settings
+                  </Link>
                   <button
                     onClick={handleLogout}
-                    className="rounded-lg bg-red-500/10 px-3 py-2.5 text-sm font-semibold text-red-100 hover:bg-red-500/20 hover:text-white text-left"
+                    className="rounded-lg bg-red-500/10 px-3 py-2.5 text-sm font-semibold text-red-100 hover:bg-red-500/20 hover:text-white text-left flex items-center gap-2"
                   >
-                    Logout
+                    <span className="opacity-70">🚪</span> Logout
                   </button>
                 </>
               ) : (
                 <>
                   <button
                     onClick={() => handleNavigation("/login")}
-                    className="rounded-lg border border-white/30 px-3 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
+                    className="rounded-lg border border-white/30 px-3 py-2.5 text-sm font-semibold text-white hover:bg-white/10 text-left"
                   >
                     Login
                   </button>
                   <button
                     onClick={() => handleNavigation("/register")}
-                    className="rounded-lg bg-white px-3 py-2.5 text-sm font-semibold text-[#064E3B]"
+                    className="rounded-lg bg-white px-3 py-2.5 text-sm font-semibold text-[#064E3B] text-center"
                   >
                     Get Started
                   </button>
@@ -194,6 +166,7 @@ function Navbar() {
         </div>
       )}
     </nav>
+
   );
 }
 

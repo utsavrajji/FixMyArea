@@ -9,6 +9,9 @@ import {
   Clock, Search, RefreshCw, CheckCircle2, XCircle, Ban, Minus, 
   MapPin, Folder, Calendar, ThumbsUp, Camera, Inbox, X
 } from "lucide-react";
+import Navbar from "../components/Navbar";
+import { IssueCardSkeleton, IssueRowSkeleton, StatCardSkeleton } from "../components/Skeleton";
+import { motion, AnimatePresence } from "framer-motion";
 
 /* ─── Constants ─────────────────────────────────────────────────────────── */
 const STATUS_LIST = [
@@ -180,7 +183,7 @@ function IssueRow({ issue }) {
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Main Component
-═══════════════════════════════════════════════════════════════════════════ */
+ ═══════════════════════════════════════════════════════════════════════════ */
 export default function AdminDashboard() {
   const [issues, setIssues]             = useState([]);
   const [allIssues, setAllIssues]       = useState([]);   // unfiltered — for sidebar counts
@@ -210,19 +213,24 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchIssues = async () => {
       setLoading(true);
-      let q = collection(db, "issues");
-      const filters = [];
-      if (statusFilter && statusFilter !== "All") filters.push(where("status", "==", statusFilter));
-      if (category && category !== "All") filters.push(where("category", "==", category));
-      const qFinal = filters.length ? query(q, ...filters) : q;
-      const snap = await getDocs(qFinal);
-      let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      if (search.trim()) {
-        const s = search.toLowerCase();
-        data = data.filter(i => i.title?.toLowerCase().includes(s) || i.description?.toLowerCase().includes(s));
+      try {
+        let q = collection(db, "issues");
+        const filters = [];
+        if (statusFilter && statusFilter !== "All") filters.push(where("status", "==", statusFilter));
+        if (category && category !== "All") filters.push(where("category", "==", category));
+        const qFinal = filters.length ? query(q, ...filters) : q;
+        const snap = await getDocs(qFinal);
+        let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        if (search.trim()) {
+          const s = search.toLowerCase();
+          data = data.filter(i => i.title?.toLowerCase().includes(s) || i.description?.toLowerCase().includes(s));
+        }
+        setIssues(data);
+      } catch (err) {
+        console.error("Error fetching issues:", err);
+      } finally {
+        setLoading(false);
       }
-      setIssues(data);
-      setLoading(false);
     };
     fetchIssues();
   }, [statusFilter, category, search]);
@@ -322,37 +330,29 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F3F4F6] flex" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="min-h-screen bg-[#F3F4F6] flex flex-col" style={{ fontFamily: "'Inter', sans-serif" }}>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-      {/* Mobile topbar */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 flex h-14 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm">
-        <button onClick={() => setSidebarOpen(true)} className="p-1">
-          <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-        <span className="text-sm font-extrabold text-gray-900">Admin Panel</span>
-        <div className="w-8 h-8 rounded-full bg-[#064E3B] flex items-center justify-center text-white text-xs font-bold">A</div>
-      </header>
+      <Navbar />
 
-      {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
-          <div className="fixed inset-0 bg-black/40" onClick={() => setSidebarOpen(false)} />
-          <aside className="relative z-10 w-64 bg-white flex flex-col h-full border-r border-gray-200 shadow-xl">
-            <SidebarContent />
-          </aside>
-        </div>
-      )}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Mobile sidebar overlay */}
+        {sidebarOpen && (
+          <div className="lg:hidden fixed inset-0 z-50 flex">
+            <div className="fixed inset-0 bg-black/40" onClick={() => setSidebarOpen(false)} />
+            <aside className="relative z-10 w-64 bg-white flex flex-col h-full border-r border-gray-200 shadow-xl">
+              <SidebarContent />
+            </aside>
+          </div>
+        )}
 
-      {/* Desktop sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 flex-shrink-0 min-h-screen bg-white border-r border-gray-200 shadow-sm">
-        <SidebarContent />
-      </aside>
+        {/* Desktop sidebar */}
+        <aside className="hidden lg:flex flex-col w-64 flex-shrink-0 bg-white border-r border-gray-200 shadow-sm">
+          <SidebarContent />
+        </aside>
 
-      {/* Main content */}
-      <main className="flex-1 min-w-0 p-4 sm:p-6 pt-20 lg:pt-6 overflow-y-auto">
+        {/* Main content */}
+        <main className="flex-1 min-w-0 p-4 sm:p-6 overflow-y-auto">
 
         {/* ── Issue Dashboard ── */}
         {activeView === "issues" && (
@@ -365,7 +365,7 @@ export default function AdminDashboard() {
               <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3 py-1 mb-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
                     <span className="text-emerald-200 text-[11px] font-bold uppercase tracking-widest">Admin Dashboard</span>
                   </div>
                   <h1 className="text-xl font-extrabold text-white">Issue Management</h1>
@@ -467,39 +467,72 @@ export default function AdminDashboard() {
             )}
 
             {/* Issue Grid / Table */}
-            {loading ? (
-              <div className="flex items-center justify-center h-64 bg-white rounded-2xl border border-gray-200">
-                <div className="text-center">
-                  <div className="w-12 h-12 border-4 border-[#064E3B] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-                  <p className="text-sm text-gray-500 font-medium">Loading issues…</p>
-                </div>
-              </div>
-            ) : issues.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-200">
-                <Inbox className="w-16 h-16 text-gray-300 mb-3" />
-                <p className="font-bold text-gray-700">No issues found</p>
-                <p className="text-sm text-gray-400 mt-1">Try adjusting your filters or search query</p>
-                <button onClick={() => { setStatusFilter("All"); setSearch(""); setCategory(""); }}
-                  className="mt-4 text-xs font-bold text-[#064E3B] border border-[#064E3B]/30 px-4 py-2 rounded-xl hover:bg-[#064E3B]/5 transition">
-                  Clear all filters
-                </button>
-              </div>
-            ) : viewMode === "grid" ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                {issues.map(issue => <IssueCard key={issue.id} issue={issue} />)}
-              </div>
-            ) : (
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 flex items-center gap-3 text-[11px] font-bold text-gray-400 uppercase tracking-widest">
-                  <span className="w-10 flex-shrink-0" />
-                  <span className="flex-1">Issue</span>
-                  <span className="hidden sm:block w-28 flex-shrink-0">Status</span>
-                  <span className="hidden md:block w-28 flex-shrink-0">Date</span>
-                  <span className="w-20 flex-shrink-0">Action</span>
-                </div>
-                {issues.map(issue => <IssueRow key={issue.id} issue={issue} />)}
-              </div>
-            )}
+            <AnimatePresence mode="wait">
+              {loading ? (
+                <motion.div
+                  key="loading"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="space-y-4"
+                >
+                  {viewMode === "grid" ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                      {[1, 2, 3, 4, 5, 6].map((n) => (
+                        <IssueCardSkeleton key={n} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                      {[1, 2, 3, 4, 5, 6].map((n) => (
+                        <IssueRowSkeleton key={n} />
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              ) : issues.length === 0 ? (
+                <motion.div
+                  key="empty"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-200"
+                >
+                  <Inbox className="w-16 h-16 text-gray-300 mb-3" />
+                  <p className="font-bold text-gray-700">No issues found</p>
+                  <p className="text-sm text-gray-400 mt-1">Try adjusting your filters or search query</p>
+                  <button onClick={() => { setStatusFilter("All"); setSearch(""); setCategory(""); }}
+                    className="mt-4 text-xs font-bold text-[#064E3B] border border-[#064E3B]/30 px-4 py-2 rounded-xl hover:bg-[#064E3B]/5 transition">
+                    Clear all filters
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="content"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {viewMode === "grid" ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                      {issues.map(issue => <IssueCard key={issue.id} issue={issue} />)}
+                    </div>
+                  ) : (
+                    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                      <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 flex items-center gap-3 text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                        <span className="w-10 flex-shrink-0" />
+                        <span className="flex-1">Issue</span>
+                        <span className="hidden sm:block w-28 flex-shrink-0">Status</span>
+                        <span className="hidden md:block w-28 flex-shrink-0">Date</span>
+                        <span className="w-20 flex-shrink-0">Action</span>
+                      </div>
+                      {issues.map(issue => <IssueRow key={issue.id} issue={issue} />)}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         )}
 
@@ -509,7 +542,7 @@ export default function AdminDashboard() {
             <div className="relative rounded-3xl overflow-hidden bg-[#064E3B] px-6 py-5 shadow-lg">
               <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-white/5 pointer-events-none" />
               <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3 py-1 mb-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
                 <span className="text-emerald-200 text-[11px] font-bold uppercase tracking-widest">Analytics</span>
               </div>
               <h1 className="text-xl font-extrabold text-white">Platform Insights</h1>
@@ -527,7 +560,7 @@ export default function AdminDashboard() {
             <div className="relative rounded-3xl overflow-hidden bg-[#064E3B] px-6 py-5 shadow-lg">
               <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-white/5 pointer-events-none" />
               <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3 py-1 mb-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
                 <span className="text-emerald-200 text-[11px] font-bold uppercase tracking-widest">Messages</span>
               </div>
               <h1 className="text-xl font-extrabold text-white">Contact Messages</h1>
@@ -538,7 +571,8 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

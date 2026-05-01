@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 const ADMIN_PASSWORD = "Utsav123";
 
@@ -20,21 +21,23 @@ export default function AdminGate() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    setTimeout(() => {
-      if (password === ADMIN_PASSWORD) {
-        sessionStorage.setItem("admin", "true");
-        navigate("/admin-dashboard", { replace: true });
-      } else {
-        setError("Invalid password. Access denied.");
-        setLoading(false);
-      }
-    }, 600);
+    if (password === ADMIN_PASSWORD) {
+      sessionStorage.setItem("admin", "true");
+      navigate("/admin-dashboard", { replace: true });
+    } else {
+      setError("Invalid password. Access denied.");
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-[#F3F4F6] flex items-center justify-center px-4"
+    <div className="min-h-screen bg-[#F3F4F6] flex flex-col"
       style={{ fontFamily: "'Inter', sans-serif" }}>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+      <Navbar />
+
+      <div className="flex-1 flex items-center justify-center px-4">
 
       <div className="w-full max-w-sm">
         {/* Logo */}
@@ -102,6 +105,7 @@ export default function AdminGate() {
         <p className="text-center text-[11px] text-gray-400 mt-6">
           Restricted access — authorised personnel only
         </p>
+      </div>
       </div>
     </div>
   );

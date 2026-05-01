@@ -84,341 +84,211 @@ export default function ContactUs() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-        {/* Back Button - Fixed Position */}
-        <div className="fixed top-20 left-4 z-40">
-          <button
-            onClick={handleBackClick}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-gray-50 border-2 border-gray-200 hover:border-orange-500 text-gray-700 hover:text-orange-600 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            <span className="hidden sm:inline">{currentUser ? "Back to Dashboard" : "Back to Home"}</span>
-            <span className="sm:hidden">Back</span>
-          </button>
-        </div>
-
+      <div className="min-h-screen bg-white">
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-16 px-4 pt-20">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full text-sm font-semibold mb-4">
-              <Phone className="w-4 h-4" /> We're Here to Help
+        <div className="bg-[#064E3B] text-white py-20 px-4 relative overflow-hidden">
+          {/* Decorative background element */}
+          <div className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/4 h-96 w-96 bg-emerald-500/10 rounded-full blur-3xl" />
+          <div className="absolute left-0 bottom-0 translate-y-1/4 -translate-x-1/4 h-64 w-64 bg-emerald-300/5 rounded-full blur-2xl" />
+
+          <div className="max-w-4xl mx-auto text-center relative z-10">
+            <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-6 py-2 rounded-full text-sm font-semibold mb-6 border border-white/20">
+              <Phone className="w-4 h-4 text-emerald-300" />
+              <span>We're Here to Help</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Get in Touch with Us
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 tracking-tight">
+              Get in Touch <span className="text-emerald-400">with Us</span>
             </h1>
-            <p className="text-lg md:text-xl text-orange-100 max-w-2xl mx-auto">
-              Have questions, feedback, or need assistance? We'd love to hear from you. Our team is ready to help!
+            <p className="text-lg md:text-xl text-emerald-100/80 max-w-2xl mx-auto leading-relaxed">
+              Have questions, feedback, or need assistance? We'd love to hear from you. 
+              Our team is dedicated to building a better community together.
             </p>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="max-w-6xl mx-auto px-4 py-12 -mt-8">
+        <div className="max-w-7xl mx-auto px-4 py-16 -mt-10 relative z-20">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Contact Info Cards */}
+            
+            {/* Left Column: Info */}
             <div className="space-y-6">
-              {/* Email Card */}
-              <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white mb-4 shadow-lg">
+              <div className="bg-white rounded-[2rem] shadow-xl shadow-emerald-900/5 border border-emerald-50 p-8 hover:shadow-2xl transition-all duration-500 group">
+                <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
                   <Mail className="w-6 h-6" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-800 mb-2">Email Us</h3>
-                <p className="text-sm text-gray-600 mb-3">
-                  Send us an email anytime, we'll respond within 24 hours
+                <h3 className="text-xl font-bold text-[#064E3B] mb-2">Email Us</h3>
+                <p className="text-gray-600 mb-6 text-sm leading-relaxed">
+                  Our support team is available to answer your questions via email.
                 </p>
                 <a
-                  href="mailto:support@fixmyarea.com"
-                  className="text-blue-600 font-semibold hover:text-blue-700 transition-colors inline-flex items-center gap-2"
+                  href="mailto:fixmyareas@gmail.com"
+                  className="text-emerald-600 font-bold hover:text-emerald-700 transition-colors inline-flex items-center gap-2 group/link"
                 >
-                  support@fixmyarea.com
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
+                  fixmyareas@gmail.com
+                  <ArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
                 </a>
               </div>
 
-              {/* Phone Card */}
-              <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center text-white mb-4 shadow-lg">
+              <div className="bg-white rounded-[2rem] shadow-xl shadow-emerald-900/5 border border-emerald-50 p-8 hover:shadow-2xl transition-all duration-500 group">
+                <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
                   <Smartphone className="w-6 h-6" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-800 mb-2">Call Us</h3>
-                <p className="text-sm text-gray-600 mb-3">
-                  Mon-Fri from 9am to 6pm IST
+                <h3 className="text-xl font-bold text-[#064E3B] mb-2">Call Us</h3>
+                <p className="text-gray-600 mb-6 text-sm leading-relaxed">
+                  Reach out for immediate assistance during working hours.
                 </p>
                 <a
-                  href="tel:+911234567890"
-                  className="text-green-600 font-semibold hover:text-green-700 transition-colors inline-flex items-center gap-2"
+                  href="tel:+917634923630"
+                  className="text-emerald-600 font-bold hover:text-emerald-700 transition-colors inline-flex items-center gap-2 group/link"
                 >
-                  +91 123-456-7890
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
+                  +91 76349 23630
+                  <ArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
                 </a>
               </div>
 
-              {/* Address Card */}
-              <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center text-white mb-4 shadow-lg">
-                  <MapPin className="w-6 h-6" />
+              <div className="bg-[#064E3B] rounded-[2rem] shadow-xl shadow-emerald-900/10 p-8 text-white relative overflow-hidden">
+                <div className="absolute right-0 bottom-0 opacity-10 translate-x-1/4 translate-y-1/4">
+                  <MapPin className="w-40 h-40" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-800 mb-2">Visit Us</h3>
-                <p className="text-sm text-gray-600 mb-3">
-                  FixMyArea Office, Radhe Nagar, Ranchi, Jharkhand - 834001, India
+                <h3 className="text-xl font-bold mb-4">Visit Us</h3>
+                <p className="text-emerald-100/70 text-sm leading-relaxed mb-6">
+                  4th Floor, NeGD, Electronics Niketan,<br />
+                  6 CGO Complex, Lodhi Road,<br />
+                  New Delhi – 110003, India
                 </p>
-                <a
-                  href="https://maps.google.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-purple-600 font-semibold hover:text-purple-700 transition-colors inline-flex items-center gap-2"
-                >
-                  View on Map
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                </a>
-              </div>
-
-              {/* Social Media Card */}
-              <div className="bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl shadow-xl p-6 text-white">
-                <h3 className="text-lg font-bold mb-3">Follow Us</h3>
-                <p className="text-sm text-orange-100 mb-4">
-                  Stay updated with our latest news and updates
-                </p>
-                <div className="flex gap-3">
-                  <a
-                    href="https://twitter.com/fixmyarea"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
-                  >
-                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.008 4.09H5.078z"/></svg>
-                  </a>
-                  <a
-                    href="https://facebook.com/fixmyarea"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
-                  >
-                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
-                  </a>
-                  <a
-                    href="https://instagram.com/fixmyarea"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
-                  >
-                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm3.98-10.822a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-                  </a>
-                  <a
-                    href="https://linkedin.com/company/fixmyarea"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
-                  >
-                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                  </a>
-                </div>
+                <button className="bg-white/10 hover:bg-white/20 px-6 py-2.5 rounded-xl text-sm font-bold transition-all border border-white/10 backdrop-blur-sm">
+                  Get Directions
+                </button>
               </div>
             </div>
 
-            {/* Contact Form */}
+            {/* Right Column: Form */}
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-2">Send Us a Message</h2>
-                  <p className="text-gray-600">Fill out the form below and we'll get back to you as soon as possible</p>
+              <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-emerald-900/5 border border-emerald-50 p-8 md:p-12 h-full">
+                <div className="mb-10">
+                  <h2 className="text-3xl font-extrabold text-[#064E3B] mb-3">Send Us a Message</h2>
+                  <p className="text-gray-500">
+                    Tell us what's on your mind. We'll get back to you as soon as possible.
+                  </p>
                 </div>
 
-                {/* Success Message */}
                 {success && (
-                  <div className="mb-6 bg-green-50 border-2 border-green-200 text-green-700 px-6 py-4 rounded-xl flex items-start gap-3 animate-fade-in">
-                    <CircleCheck className="w-6 h-6 shrink-0 mt-0.5" />
+                  <div className="mb-8 bg-emerald-50 border border-emerald-100 text-emerald-800 px-6 py-4 rounded-2xl flex items-start gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <CircleCheck className="w-6 h-6 shrink-0 text-emerald-500" />
                     <div>
-                      <p className="font-semibold">Message Sent Successfully!</p>
-                      <p className="text-sm">Thank you for contacting us. We'll respond within 24 hours. Redirecting to home...</p>
+                      <p className="font-bold">Thank you for reaching out!</p>
+                      <p className="text-sm opacity-90">Your message has been received. Redirecting you home...</p>
                     </div>
                   </div>
                 )}
 
-                {/* Error Message */}
                 {error && (
-                  <div className="mb-6 bg-red-50 border-2 border-red-200 text-red-700 px-6 py-4 rounded-xl flex items-start gap-3 animate-shake">
-                    <AlertTriangle className="w-6 h-6 shrink-0 mt-0.5" />
+                  <div className="mb-8 bg-red-50 border border-red-100 text-red-800 px-6 py-4 rounded-2xl flex items-start gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <AlertTriangle className="w-6 h-6 shrink-0 text-red-500" />
                     <div>
-                      <p className="font-semibold">Error</p>
-                      <p className="text-sm">{error}</p>
+                      <p className="font-bold">Something went wrong</p>
+                      <p className="text-sm opacity-90">{error}</p>
                     </div>
-                    <button onClick={() => setError("")} className="ml-auto text-red-700 hover:text-red-900 group">
-                      <X className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    <button onClick={() => setError("")} className="ml-auto text-red-400 hover:text-red-600">
+                      <X className="w-5 h-5" />
                     </button>
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  {/* Name */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Full Name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      placeholder="Enter your full name"
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all duration-300"
-                      required
-                    />
-                  </div>
-
-                  {/* Email & Phone */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Email Address <span className="text-red-500">*</span>
-                      </label>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-[#064E3B] ml-1">Full Name</label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        placeholder="John Doe"
+                        className="w-full px-5 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 transition-all outline-none"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-[#064E3B] ml-1">Email Address</label>
                       <input
                         type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        placeholder="your.email@example.com"
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all duration-300"
+                        placeholder="john@example.com"
+                        className="w-full px-5 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 transition-all outline-none"
                         required
                       />
                     </div>
+                  </div>
 
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Phone Number
-                      </label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-[#064E3B] ml-1">Phone Number</label>
                       <input
                         type="tel"
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        placeholder="+91-XXXXX-XXXXX"
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all duration-300"
+                        placeholder="+91 00000 00000"
+                        className="w-full px-5 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 transition-all outline-none"
                       />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-[#064E3B] ml-1">Subject</label>
+                      <select
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleInputChange}
+                        className="w-full px-5 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 transition-all outline-none appearance-none"
+                        required
+                      >
+                        <option value="">Select a subject</option>
+                        <option value="General Inquiry">General Inquiry</option>
+                        <option value="Technical Support">Technical Support</option>
+                        <option value="Report a Bug">Report a Bug</option>
+                        <option value="Feature Request">Feature Request</option>
+                        <option value="Partnership">Partnership Opportunity</option>
+                        <option value="Feedback">Feedback</option>
+                        <option value="Other">Other</option>
+                      </select>
                     </div>
                   </div>
 
-                  {/* Subject */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Subject <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all duration-300"
-                      required
-                    >
-                      <option value="">Select a subject</option>
-                      <option value="General Inquiry">General Inquiry</option>
-                      <option value="Technical Support">Technical Support</option>
-                      <option value="Report a Bug">Report a Bug</option>
-                      <option value="Feature Request">Feature Request</option>
-                      <option value="Partnership">Partnership Opportunity</option>
-                      <option value="Feedback">Feedback</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-
-                  {/* Message */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Message <span className="text-red-500">*</span>
-                    </label>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-[#064E3B] ml-1">Message</label>
                     <textarea
                       name="message"
                       value={formData.message}
                       onChange={handleInputChange}
-                      placeholder="Write your message here..."
-                      rows={6}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all duration-300 resize-none"
+                      placeholder="How can we help you today?"
+                      rows={5}
+                      className="w-full px-5 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 transition-all outline-none resize-none"
                       required
-                      maxLength={1000}
                     />
-                    <p className="text-xs text-gray-500 mt-1 text-right">
-                      {formData.message.length}/1000 characters
-                    </p>
                   </div>
 
-                  {/* Submit Button */}
                   <button
                     type="submit"
                     disabled={loading || success}
-                    className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                    className="w-full bg-[#064E3B] text-white py-5 rounded-2xl font-bold text-lg shadow-xl shadow-emerald-900/10 hover:bg-[#053d2f] hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 group"
                   >
                     {loading ? (
-                      <>
-                        <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>Sending Message...</span>
-                      </>
-                    ) : success ? (
-                      <>
-                        <CircleCheck className="w-5 h-5" />
-                        <span>Message Sent!</span>
-                      </>
+                      <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin" />
                     ) : (
                       <>
-                        <Send className="w-5 h-5" />
+                        <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                         <span>Send Message</span>
                       </>
                     )}
                   </button>
                 </form>
               </div>
-
-              {/* FAQ Section */}
-              <div className="mt-8 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl border-2 border-blue-200 p-6">
-                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                  <HelpCircle className="w-6 h-6 text-blue-500" />
-                  <span>Frequently Asked Questions</span>
-                </h3>
-                <div className="space-y-3">
-                  <div className="bg-white rounded-xl p-4 shadow-sm">
-                    <h4 className="font-semibold text-gray-800 mb-1">How long does it take to get a response?</h4>
-                    <p className="text-sm text-gray-600">We typically respond within 24 hours on business days.</p>
-                  </div>
-                  <div className="bg-white rounded-xl p-4 shadow-sm">
-                    <h4 className="font-semibold text-gray-800 mb-1">Can I report issues through contact form?</h4>
-                    <p className="text-sm text-gray-600">No, please use the "Report Issue" feature for civic issues. This form is for general inquiries only.</p>
-                  </div>
-                  <div className="bg-white rounded-xl p-4 shadow-sm">
-                    <h4 className="font-semibold text-gray-800 mb-1">Do you offer technical support?</h4>
-                    <p className="text-sm text-gray-600">Yes! Select "Technical Support" as your subject and describe your issue in detail.</p>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
       </div>
-
-      <style>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.5s ease-out;
-        }
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-5px); }
-          75% { transform: translateX(5px); }
-        }
-        .animate-shake {
-          animation: shake 0.3s ease-in-out;
-        }
-      `}</style>
-
       <Footer />
     </>
   );
