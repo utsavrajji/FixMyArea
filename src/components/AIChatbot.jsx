@@ -56,47 +56,81 @@ export default function AIChatbot() {
         throw new Error("Missing Gemini API Key in .env file (VITE_GEMINI_API_KEY).");
       }
 
-      // Format history for Gemini API
-      const contents = newMessages.map(msg => ({
-        role: msg.role === "model" ? "model" : "user",
-        parts: [{ text: msg.text }]
-      }));
+      // Step 1: Dynamically find a working Gemini model for this key
+      const modelsRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+      const modelsData = await modelsRes.json();
+      
+      // Forcefully try to find ANY flash model as they are the most reliable for free tier
+      let selectedModel = modelsData.models?.find(m => 
+        m.name.toLowerCase().includes("flash") && 
+        m.supportedGenerationMethods.includes("generateContent")
+      )?.name;
+      
+      // If no flash model found, try gemini-pro
+      if (!selectedModel) {
+        selectedModel = modelsData.models?.find(m => 
+          m.name.toLowerCase().includes("gemini-pro") && 
+          m.supportedGenerationMethods.includes("generateContent")
+        )?.name;
+      }
 
-      const payload = {
-        systemInstruction: {
-          parts: [{ text: SYSTEM_PROMPT }]
+      // Final fallback to the first supported model
+      if (!selectedModel) {
+        selectedModel = modelsData.models?.find(m => m.supportedGenerationMethods.includes("generateContent"))?.name;
+      }
+
+      if (!selectedModel) {
+        throw new Error("No compatible Gemini models found for this API key.");
+      }
+      
+      console.log("Using model:", selectedModel);
+
+      // Format history
+      const contents = [
+        {
+          role: "user",
+          parts: [{ text: `SYSTEM CONTEXT: ${SYSTEM_PROMPT}\n\nPlease help the user based on these instructions.` }]
         },
-        contents: contents
-      };
+        {
+          role: "model",
+          parts: [{ text: "Understood. I am ready to assist as the FixMyArea AI Assistant." }]
+        },
+        ...newMessages.map(msg => ({
+          role: msg.role === "model" ? "model" : "user",
+          parts: [{ text: msg.text }]
+        }))
+      ];
 
+      // Step 2: Use the dynamically selected model
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/${selectedModel}:generateContent?key=${apiKey}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({ contents })
         }
       );
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error?.message || "Something went wrong processing the AI request.");
+        console.error("Gemini API Error details:", data);
+        throw new Error(data.error?.message || `API Error: ${response.status}`);
       }
 
       const botReply = data.candidates?.[0]?.content?.parts?.[0]?.text;
       if (botReply) {
         setMessages(prev => [...prev, { role: "model", text: botReply }]);
       } else {
-        throw new Error("Got empty response from AI.");
+        throw new Error("Empty response from AI.");
       }
     } catch (error) {
       console.error("Chatbot Error:", error);
       setMessages(prev => [...prev, { 
         role: "model", 
-        text: error.message.includes("VITE_GEMINI_API_KEY") 
-          ? "⚠️ FixMyArea Admin: Please add VITE_GEMINI_API_KEY to your .env file to enable the AI Chatbot." 
-          : "⚠️ Sorry, I encountered an error. Please try asking again later." 
+        text: "⚠️ " + (error.message.includes("VITE_GEMINI_API_KEY") 
+          ? "Please add VITE_GEMINI_API_KEY to your .env file." 
+          : "I'm having trouble connecting to my brain. Please try again in a moment.")
       }]);
     } finally {
       setLoading(false);
