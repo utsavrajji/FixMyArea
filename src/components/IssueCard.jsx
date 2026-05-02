@@ -12,19 +12,17 @@ export default function IssueCard({ issue, variant = "full" }) {
 
   const {
     id, title, category, subIssue, description, photoURL, status, location,
-    likes: likesArray = [], likesCount = 0, upvotes = 0, commentsCount = 0
+    likes: likesArray = [], likesCount = 0, commentsCount = 0
   } = issue;
 
   const [likes, setLikes] = useState(likesCount);
-  const [votes, setVotes] = useState(upvotes);
   const [comments, setComments] = useState(commentsCount);
 
   // Sync with real-time updates from props
   useEffect(() => {
     setLikes(issue.likesCount || 0);
-    setVotes(issue.upvotes || 0);
     setComments(issue.commentsCount || 0);
-  }, [issue.likesCount, issue.upvotes, issue.commentsCount]);
+  }, [issue.likesCount, issue.commentsCount]);
 
   const getStatusStyles = (s) => {
     switch (s) {
@@ -73,10 +71,6 @@ export default function IssueCard({ issue, variant = "full" }) {
             {title || `${category} - ${subIssue}`}
           </h3>
           <div className="flex items-center gap-3 pt-1">
-            <div className="flex items-center gap-1 text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-              <ChevronUp className="w-3 h-3" strokeWidth={3} />
-              <span>{votes}</span>
-            </div>
             <div className="flex items-center gap-1 text-[10px] font-black text-rose-500 bg-rose-50 px-2 py-0.5 rounded-full">
               <Heart className="w-3 h-3 fill-rose-500" />
               <span>{likes}</span>

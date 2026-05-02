@@ -7,7 +7,6 @@ import Navbar from "../components/Navbar";
 import LikeButton from "../components/LikeButton";
 import CommentsSection from "../components/CommentsSection";
 import RetweetButton from "../components/RetweetButton";
-import CommunityVotes from "../components/CommunityVotes";
 import Footer from "../components/Footer";
 import { IssueCardSkeleton, ProfileSkeleton } from "../components/Skeleton";
 import { motion, AnimatePresence } from "framer-motion";
@@ -154,8 +153,8 @@ export default function IssueDetail() {
                   </div>
                 )}
 
-                <div className="flex flex-col gap-5 sm:flex-row">
-                  <div className="flex-1 space-y-5">
+                <div className="flex flex-col gap-5">
+                  <div className="space-y-5">
                     <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
                       <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-gray-400">Description</h2>
                       <p className="text-gray-700 leading-relaxed">{issue.description || "No description provided."}</p>
@@ -175,11 +174,6 @@ export default function IssueDetail() {
                         <p className="text-sm font-bold text-gray-800 truncate">{typeof issue.location === "object" ? Object.values(issue.location).filter(Boolean).join(", ") : issue.location}</p>
                       </div>
                     </div>
-                  </div>
-
-                  <div className="w-full sm:w-24 shrink-0">
-                    <h2 className="mb-3 text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 sm:block hidden">Votes</h2>
-                    <CommunityVotes issueId={id} initialVotes={issue.upvotes || 0} />
                   </div>
                 </div>
 
