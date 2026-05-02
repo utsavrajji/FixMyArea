@@ -55,7 +55,7 @@ function Navbar() {
       <div className="relative mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         
         {/* Left Side: Menu Toggle */}
-        <div className="flex items-center gap-2 min-w-[120px]">
+        <div className="flex items-center gap-2 min-w-[40px] sm:min-w-[120px]">
           <button
             type="button"
             className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/30 text-white hover:bg-white/10"
@@ -83,24 +83,13 @@ function Navbar() {
           </span>
         </Link>
 
-        {/* Right Side: Action Buttons / Desktop Links */}
-        <div className="flex items-center justify-end gap-6 min-w-[120px]">
-          {!hideLinks && (
-            <div className="hidden items-center gap-6 lg:flex">
-              {user ? (
-                <Link to="/dashboard" className="text-sm font-medium text-white/80 transition hover:text-emerald-300">Dashboard</Link>
-              ) : (
-                <Link to="/" className="text-sm font-medium text-white/80 transition hover:text-emerald-300">Home</Link>
-              )}
-              <Link to="/local-issues" className="text-sm font-medium text-white/80 transition hover:text-emerald-300">Feed</Link>
-              <Link to="/report-issue" className="text-sm font-medium text-white/80 transition hover:text-emerald-300">Report</Link>
-            </div>
-          )}
+          {/* Right Side: Action Buttons */}
+          <div className="flex items-center justify-end gap-6 min-w-[40px] sm:min-w-[120px]">
           
           {!user && (
             <button
               onClick={() => handleNavigation("/register")}
-              className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-[#064E3B] shadow-md hover:bg-emerald-50 hover:shadow-lg"
+              className="rounded-lg bg-white px-2.5 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm font-semibold text-[#064E3B] shadow-md hover:bg-emerald-50 hover:shadow-lg transition-all"
             >
               Get Started
             </button>
@@ -108,25 +97,50 @@ function Navbar() {
         </div>
       </div>
 
-      {/* Navigation Menu (Dropdown) */}
+      {/* Navigation Menu (Dropdown) - Now Absolute to Overlap content */}
       {isMenuOpen && (
-        <div className="border-t border-white/10 bg-[#053d2f] px-4 py-4 shadow-xl">
+        <div className="absolute top-full left-0 w-full border-t border-white/10 bg-[#053d2f]/95 backdrop-blur-lg px-4 py-4 shadow-2xl z-[60]">
           <div className="flex flex-col gap-1">
             {user ? (
-              <Link to="/dashboard" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
-                Dashboard
-              </Link>
+              <>
+                <Link to="/dashboard" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
+                  Dashboard
+                </Link>
+                <Link to="/local-issues" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
+                  Feed
+                </Link>
+                <Link to="/report-issue" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
+                  Report Issue
+                </Link>
+              </>
             ) : (
-              <Link to="/" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
-                Home
-              </Link>
+              <>
+                <Link to="/" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
+                  Home
+                </Link>
+                <Link to="/local-issues" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
+                  Feed
+                </Link>
+                <Link to="/login" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
+                  Report
+                </Link>
+                <Link to="/login" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
+                  Login
+                </Link>
+                <Link to="/contact" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
+                  Contact Us
+                </Link>
+                <Link to="/privacy" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
+                  Privacy Policy
+                </Link>
+                <Link to="/terms" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
+                  Terms & Conditions
+                </Link>
+                <Link to="/faqs" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
+                  FAQs
+                </Link>
+              </>
             )}
-            <Link to="/local-issues" className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
-              Feed
-            </Link>
-            <Link to={user ? "/report-issue" : "/login"} className="rounded-lg px-3 py-2.5 text-sm font-medium text-white hover:bg-white/10" onClick={() => setIsMenuOpen(false)}>
-              Report Issue
-            </Link>
             
             <div className="mt-3 pt-3 border-t border-white/10 flex flex-col gap-2">
               {user ? (
@@ -146,20 +160,12 @@ function Navbar() {
                   </button>
                 </>
               ) : (
-                <>
-                  <button
-                    onClick={() => handleNavigation("/login")}
-                    className="rounded-lg border border-white/30 px-3 py-2.5 text-sm font-semibold text-white hover:bg-white/10 text-left"
-                  >
-                    Login
-                  </button>
-                  <button
-                    onClick={() => handleNavigation("/register")}
-                    className="rounded-lg bg-white px-3 py-2.5 text-sm font-semibold text-[#064E3B] text-center"
-                  >
-                    Get Started
-                  </button>
-                </>
+                <button
+                  onClick={() => handleNavigation("/register")}
+                  className="rounded-lg bg-white px-3 py-2.5 text-sm font-semibold text-[#064E3B] text-center"
+                >
+                  Get Started
+                </button>
               )}
             </div>
           </div>

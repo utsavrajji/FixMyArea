@@ -6,7 +6,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { Phone, Mail, Smartphone, MapPin, CircleCheck, AlertTriangle, X, Send, HelpCircle } from "lucide-react";
+import { Phone, Mail, Smartphone, MapPin, CircleCheck, AlertTriangle, X, Send, HelpCircle, ArrowRight } from "lucide-react";
 
 export default function ContactUs() {
   const navigate = useNavigate();

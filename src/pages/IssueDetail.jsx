@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, Folder, MapPin, Clock, Search, ThumbsUp, Map, MessageSquare } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase/config";
 import Navbar from "../components/Navbar";
 import LikeButton from "../components/LikeButton";
 import CommentsSection from "../components/CommentsSection";
 import RetweetButton from "../components/RetweetButton";
+import CommunityVotes from "../components/CommunityVotes";
 import Footer from "../components/Footer";
 import { IssueCardSkeleton, ProfileSkeleton } from "../components/Skeleton";
 import { motion, AnimatePresence } from "framer-motion";
@@ -28,19 +29,24 @@ export default function IssueDetail() {
   const [showImageModal, setShowImageModal] = useState(false);
 
   useEffect(() => {
-    const fetchIssue = async () => {
-      try {
-        const docSnap = await getDoc(doc(db, "issues", id));
-        if (docSnap.exists()) setIssue({ id: docSnap.id, ...docSnap.data() });
-        else setError("Issue not found");
-      } catch (err) {
-        console.error("Error fetching issue:", err);
-        setError("Failed to load issue");
-      } finally {
-        setLoading(false);
+    if (!id) return;
+
+    // Real-time listener for the issue document
+    const unsub = onSnapshot(doc(db, "issues", id), (docSnap) => {
+      if (docSnap.exists()) {
+        setIssue({ id: docSnap.id, ...docSnap.data() });
+        setError("");
+      } else {
+        setError("Issue not found");
       }
-    };
-    fetchIssue();
+      setLoading(false);
+    }, (err) => {
+      console.error("Error fetching issue:", err);
+      setError("Failed to load issue details");
+      setLoading(false);
+    });
+
+    return () => unsub(); // Cleanup listener on unmount
   }, [id]);
 
   const renderSkeleton = () => (
@@ -148,24 +154,33 @@ export default function IssueDetail() {
                   </div>
                 )}
 
-                <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
-                  <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-gray-400">Description</h2>
-                  <p className="text-gray-700 leading-relaxed">{issue.description || "No description provided."}</p>
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                  {[
-                    { icon: <Folder className="w-5 h-5 text-emerald-600" />, label: "Category", value: `${issue.category}${issue.subIssue ? ` › ${issue.subIssue}` : ""}` },
-                    { icon: <MapPin className="w-5 h-5 text-blue-600" />, label: "Location", value: typeof issue.location === "object" ? Object.values(issue.location).filter(Boolean).join(", ") : issue.location },
-                    { icon: <ThumbsUp className="w-5 h-5 text-amber-600" />, label: "Community Votes", value: `${issue.upvotes || 0} upvotes` },
-                  ].map(({ icon, label, value }) => (
-                    <div key={label} className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm hover:border-emerald-200 transition-colors">
-                      <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400">
-                        <span>{icon}</span> {label}
-                      </div>
-                      <p className="text-sm font-bold text-gray-800 line-clamp-2">{value}</p>
+                <div className="flex flex-col gap-5 sm:flex-row">
+                  <div className="flex-1 space-y-5">
+                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
+                      <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-gray-400">Description</h2>
+                      <p className="text-gray-700 leading-relaxed">{issue.description || "No description provided."}</p>
                     </div>
-                  ))}
+
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                        <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                          <Folder className="w-4 h-4 text-emerald-600" /> Category
+                        </div>
+                        <p className="text-sm font-bold text-gray-800">{issue.category}{issue.subIssue ? ` › ${issue.subIssue}` : ""}</p>
+                      </div>
+                      <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                        <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                          <MapPin className="w-4 h-4 text-blue-600" /> Location
+                        </div>
+                        <p className="text-sm font-bold text-gray-800 truncate">{typeof issue.location === "object" ? Object.values(issue.location).filter(Boolean).join(", ") : issue.location}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="w-full sm:w-24 shrink-0">
+                    <h2 className="mb-3 text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 sm:block hidden">Votes</h2>
+                    <CommunityVotes issueId={id} initialVotes={issue.upvotes || 0} />
+                  </div>
                 </div>
 
                 {issue.locationCoords?.lat && issue.locationCoords?.lon && (
@@ -173,11 +188,7 @@ export default function IssueDetail() {
                     <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-400">
                       <Map className="w-5 h-5 inline mr-1 -mt-0.5" /> Live GPS Location
                     </h2>
-                    <div className="relative overflow-hidden rounded-xl border border-gray-200 h-[350px]">
-                      <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-[#064E3B] shadow">
-                        <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
-                        GPS Coordinates
-                      </div>
+                    <div className="relative overflow-hidden rounded-xl border border-gray-200 h-[300px]">
                       <iframe width="100%" height="100%" style={{ border: 0 }} loading="lazy" allowFullScreen
                         src={`https://maps.google.com/maps?q=${issue.locationCoords.lat},${issue.locationCoords.lon}&z=16&output=embed`} />
                     </div>
@@ -185,16 +196,20 @@ export default function IssueDetail() {
                 )}
 
                 <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-                  <h2 className="mb-4 text-sm font-bold uppercase tracking-wide text-gray-400">Community Engagement</h2>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <LikeButton issueId={id} likes={issue.likes || []} likesCount={issue.likesCount || 0} />
-                    <RetweetButton issueId={id} />
+                  <div className="mb-4 flex items-center justify-between border-b border-gray-50 pb-4">
+                    <h2 className="text-sm font-bold uppercase tracking-wide text-gray-400">Community Engagement</h2>
+                    <div className="flex items-center gap-3">
+                      <LikeButton issueId={id} likes={issue.likes || []} likesCount={issue.likesCount || 0} />
+                      <RetweetButton issueId={id} title={issue.title} />
+                    </div>
                   </div>
-                </div>
-
-                <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
-                  <h2 className="mb-4 text-sm font-bold uppercase tracking-wide text-gray-400"><MessageSquare className="w-4 h-4 inline mr-1 -mt-0.5 ml-1" /> Comments</h2>
-                  <CommentsSection issueId={id} />
+                  
+                  <div className="mt-6">
+                    <h2 className="mb-6 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-400">
+                      <MessageSquare className="w-4 h-4" /> Discussion
+                    </h2>
+                    <CommentsSection issueId={id} />
+                  </div>
                 </div>
               </div>
             </motion.div>

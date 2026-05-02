@@ -1,53 +1,85 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { updateDoc, doc, arrayUnion, arrayRemove, increment } from "firebase/firestore";
 import { db, auth } from "../firebase/config";
+import { Heart } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function LikeButton({ issueId, likes = [], likesCount = 0 }) {
-  const userId = auth.currentUser?.uid || "demo-user";
-  const liked = likes.includes(userId);
-  const [state, setState] = useState({ likes, count: likesCount, loading: false });
+  const user = auth.currentUser;
+  const userId = user?.uid;
+  
+  // Local state to manage likes and count for immediate feedback
+  const [state, setState] = useState({ 
+    likes: Array.isArray(likes) ? likes : [], 
+    count: likesCount || 0, 
+    loading: false 
+  });
 
-  const toggleLike = async () => {
-    if (!issueId) return;
-    setState((prev) => ({ ...prev, loading: true }));
+  // Sync state if props change (though we rely on local state for speed)
+  useEffect(() => {
+    setState(prev => ({
+      ...prev,
+      likes: Array.isArray(likes) ? likes : [],
+      count: likesCount || 0
+    }));
+  }, [likes, likesCount]);
+
+  const isLiked = userId ? state.likes.includes(userId) : false;
+
+  const handleLike = async () => {
+    if (!userId) {
+      alert("Please login to support this issue.");
+      return;
+    }
+    // Prevent action if not logged in or loading
+    if (!issueId || state.loading) return;
+
+    const isCurrentlyLiked = state.likes.includes(userId);
+    const newLikes = isCurrentlyLiked 
+      ? state.likes.filter(id => id !== userId)
+      : [...state.likes, userId];
+    const newCount = isCurrentlyLiked ? state.count - 1 : state.count + 1;
+
+    setState((prev) => ({ 
+      ...prev,
+      likes: newLikes,
+      count: newCount,
+      loading: true 
+    }));
+
     const ref = doc(db, "issues", issueId);
     try {
-      if (liked) {
-        setState((prev) => ({
-          likes: prev.likes.filter((id) => id !== userId),
-          count: prev.count - 1,
-          loading: false,
-        }));
-        await updateDoc(ref, {
-          likes: arrayRemove(userId),
-          likesCount: increment(-1),
-        });
-      } else {
-        setState((prev) => ({
-          likes: [...prev.likes, userId],
-          count: prev.count + 1,
-          loading: false,
-        }));
-        await updateDoc(ref, {
-          likes: arrayUnion(userId),
-          likesCount: increment(1),
-        });
-      }
-    } catch {
+      await updateDoc(ref, {
+        likes: isCurrentlyLiked ? arrayRemove(userId) : arrayUnion(userId),
+        likesCount: increment(isCurrentlyLiked ? -1 : 1),
+      });
+    } catch (error) {
+      console.error("Error toggling like:", error);
+      // Rollback on error
+      setState((prev) => ({
+        ...prev,
+        likes: state.likes,
+        count: state.count,
+        loading: false
+      }));
+    } finally {
       setState((prev) => ({ ...prev, loading: false }));
     }
   };
 
   return (
-    <button
-      type="button"
-      onClick={toggleLike}
+    <motion.button
+      whileTap={!isLiked ? { scale: 0.9 } : {}}
+      onClick={handleLike}
       disabled={state.loading}
-      className={`px-3 py-1 rounded border text-sm flex items-center border-gray-300 hover:bg-gray-100 ${
-        liked ? "text-rose-700 border-rose-400 bg-rose-50" : "text-gray-700"
+      className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold transition-all border ${
+        isLiked 
+          ? "bg-rose-500 border-rose-500 text-white shadow-lg shadow-rose-200" 
+          : "bg-white border-gray-100 text-gray-500 hover:border-rose-200 hover:text-rose-500 hover:bg-rose-50/30"
       }`}
     >
-      ❤️ <span className="ml-1">{state.count}</span>
-    </button>
+      <Heart className={`w-5 h-5 ${isLiked ? "fill-white" : ""}`} strokeWidth={isLiked ? 2 : 2.5} />
+      <span>{state.count}</span>
+    </motion.button>
   );
 }

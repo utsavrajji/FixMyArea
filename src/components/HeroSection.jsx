@@ -53,7 +53,7 @@ function HeroSection() {
   }, []);
 
   return (
-    <section className="relative isolate flex w-full flex-col overflow-hidden bg-[#064E3B]">
+    <section className="relative isolate flex w-full flex-col overflow-hidden bg-[#064E3B] min-h-[280px] sm:min-h-0 aspect-[4/3] sm:aspect-auto">
       {/* ── Background carousel ── */}
       <div className="absolute inset-0 -z-10">
         <div
@@ -71,30 +71,30 @@ function HeroSection() {
           ))}
         </div>
         {/* subtle dark overlay to ensure text readability while keeping image clear */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/40" />
+        <div className="absolute inset-0 bg-black/40 sm:bg-gradient-to-r sm:from-black/70 sm:via-black/40 sm:to-black/40" />
       </div>
 
       {/* ── Hero Content ── */}
-      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center gap-10 px-4 py-16 text-center sm:px-6 sm:py-20 lg:py-28 lg:px-10">
+      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center gap-3 px-4 py-6 text-center sm:gap-10 sm:px-6 sm:py-20 lg:py-28 lg:px-10">
 
         {/* Badge */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-white/10 px-4 py-1.5 text-xs font-semibold text-emerald-200 backdrop-blur-sm sm:text-sm"
+          className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-white/10 px-3 py-1 text-[10px] font-semibold text-emerald-200 backdrop-blur-sm sm:text-sm"
         >
-          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
           Empowering citizen-led change
         </motion.div>
 
         {/* Headline */}
-        <div className="space-y-4">
+        <div className="space-y-2 sm:space-y-4">
           <motion.h1 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
+            className="text-xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
           >
             Your Voice for a{" "}
             <span className="text-emerald-300">Better Locality</span>
@@ -103,10 +103,10 @@ function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="mx-auto max-w-2xl text-sm text-white/75 sm:text-base md:text-lg lg:text-xl leading-relaxed"
+            className="mx-auto max-w-2xl text-[11px] text-white/75 sm:text-base md:text-lg lg:text-xl leading-relaxed"
           >
             Report local problems, let your community verify them, and watch the
-            government take action — all in one transparent platform.
+            government take action.
           </motion.p>
         </div>
 
@@ -115,11 +115,11 @@ function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-          className="flex flex-col gap-3 sm:flex-row sm:gap-4"
+          className="flex flex-col gap-2 sm:flex-row sm:gap-4"
         >
           <a
             href="/login"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-[#064E3B] shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:px-8 sm:py-3.5 sm:text-base"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-3.5 py-2 text-[10px] font-bold text-[#064E3B] shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:px-8 sm:py-3.5 sm:text-base"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -128,7 +128,7 @@ function HeroSection() {
           </a>
           <button
             onClick={() => navigate("/local-issues")}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-white/20 sm:px-8 sm:py-3.5 sm:text-base"
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/30 bg-white/10 px-3.5 py-2 text-[10px] font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-white/20 sm:px-8 sm:py-3.5 sm:text-base"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
