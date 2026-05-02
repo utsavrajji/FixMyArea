@@ -191,6 +191,161 @@ app.post("/api/send-to-government", async (req, res) => {
   }
 });
 
+// SEND RESOLVED NOTIFICATION to User - endpoint
+app.post("/api/send-resolved-email", async (req, res) => {
+  const {
+    userEmail,
+    userName,
+    issueTitle,
+    issueDescription,
+    issueCategory,
+    issueLocation,
+    proofImageUrl,
+    issueId
+  } = req.body;
+
+  console.log("📧 Resolved email request for:", userEmail, "| Issue:", issueTitle);
+
+  if (!userEmail || !issueTitle) {
+    return res.status(400).json({
+      success: false,
+      message: "User email and issue title are required"
+    });
+  }
+
+  const resolvedDate = new Date().toLocaleDateString("en-IN", {
+    day: "numeric", month: "long", year: "numeric"
+  });
+  const resolvedTime = new Date().toLocaleTimeString("en-IN", {
+    hour: "2-digit", minute: "2-digit"
+  });
+
+  const mailOptions = {
+    from: '"FixMyArea" <fixmyareas@gmail.com>',
+    to: userEmail,
+    subject: `✅ Issue Resolved: ${issueTitle}`,
+    html: `
+      <div style="font-family:'Segoe UI',Arial,sans-serif;background:#f0fdf4;padding:30px 0;min-height:100vh;">
+        <div style="max-width:620px;background:#ffffff;border-radius:20px;box-shadow:0 4px 24px rgba(0,0,0,0.09);margin:0 auto;overflow:hidden;">
+
+          <!-- Header -->
+          <div style="background:linear-gradient(135deg,#064E3B,#10b981);padding:36px 32px;text-align:center;">
+            <div style="width:70px;height:70px;background:rgba(255,255,255,0.2);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;">
+              <span style="font-size:36px;">✅</span>
+            </div>
+            <h1 style="color:#ffffff;margin:0;font-size:26px;font-weight:800;letter-spacing:-0.5px;">
+              Issue Resolved!
+            </h1>
+            <p style="color:#a7f3d0;margin:8px 0 0 0;font-size:14px;">
+              Your reported issue has been successfully resolved by the authorities.
+            </p>
+          </div>
+
+          <!-- Body -->
+          <div style="padding:32px;">
+
+            <!-- Greeting -->
+            <p style="color:#374151;font-size:16px;margin:0 0 24px 0;">
+              Dear <strong>${userName || "Citizen"}</strong>,
+            </p>
+            <p style="color:#6b7280;font-size:15px;line-height:1.7;margin:0 0 24px 0;">
+              Great news! The issue you reported on <strong>FixMyArea</strong> has been officially marked as
+              <strong style="color:#064E3B;">Resolved</strong>. The concerned authorities have taken action
+              and resolved this matter. Thank you for being an active citizen!
+            </p>
+
+            <!-- Issue Card -->
+            <div style="background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:14px;padding:20px;margin-bottom:24px;">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+                <div style="background:#064E3B;color:#fff;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">
+                  RESOLVED
+                </div>
+                <span style="color:#6b7280;font-size:12px;">${resolvedDate} at ${resolvedTime}</span>
+              </div>
+
+              <h3 style="color:#111827;font-size:18px;font-weight:700;margin:0 0 8px 0;">
+                ${issueTitle}
+              </h3>
+
+              ${issueDescription ? `<p style="color:#6b7280;font-size:13px;line-height:1.6;margin:0 0 16px 0;">${issueDescription}</p>` : ""}
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:10px;padding:12px;">
+                  <p style="color:#9ca3af;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px 0;">📂 Category</p>
+                  <p style="color:#111827;font-size:13px;font-weight:600;margin:0;">${issueCategory || "—"}</p>
+                </div>
+                <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:10px;padding:12px;">
+                  <p style="color:#9ca3af;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px 0;">📍 Location</p>
+                  <p style="color:#111827;font-size:13px;font-weight:600;margin:0;">${issueLocation || "—"}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Proof Image -->
+            ${proofImageUrl ? `
+            <div style="margin-bottom:24px;">
+              <p style="color:#374151;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 10px 0;">
+                📸 Resolution Proof Photo
+              </p>
+              <div style="border-radius:14px;overflow:hidden;border:2px solid #d1fae5;background:#000;">
+                <img src="${proofImageUrl}" alt="Resolution Proof" style="width:100%;max-height:380px;object-fit:contain;display:block;" />
+              </div>
+              <p style="color:#6b7280;font-size:11px;margin:8px 0 0 0;text-align:center;">
+                Official resolution proof submitted by authorities
+              </p>
+            </div>
+            ` : ""}
+
+            <!-- CTA -->
+            <div style="text-align:center;margin:28px 0;">
+              <a href="https://fix-my-area-seven.vercel.app/issue/${issueId || ""}"
+                style="display:inline-block;background:linear-gradient(135deg,#064E3B,#10b981);color:#ffffff;text-decoration:none;font-weight:700;font-size:14px;padding:14px 36px;border-radius:12px;letter-spacing:0.3px;">
+                🔍 View Full Issue Details
+              </a>
+            </div>
+
+            <!-- Thank you box -->
+            <div style="background:#f0fdf4;border:1.5px solid #a7f3d0;border-radius:14px;padding:18px;text-align:center;">
+              <p style="color:#065f46;font-size:14px;font-weight:600;margin:0 0 6px 0;">
+                🙏 Thank you for making your community better!
+              </p>
+              <p style="color:#6b7280;font-size:12px;margin:0;line-height:1.6;">
+                Your voice matters. Keep reporting issues to help us build a better and
+                more responsive civic system for everyone.
+              </p>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div style="background:#f9fafb;border-top:1px solid #e5e7eb;padding:20px 32px;text-align:center;">
+            <p style="color:#9ca3af;font-size:12px;margin:0;">
+              Sent by <strong style="color:#064E3B;">FixMyArea</strong> · Empowering Citizens, Enabling Change
+            </p>
+            <p style="color:#d1d5db;font-size:11px;margin:6px 0 0 0;">
+              If you did not report any issue, please ignore this email.
+            </p>
+          </div>
+        </div>
+      </div>
+    `
+  };
+
+  try {
+    console.log("📤 Sending resolved notification to user:", userEmail);
+    const info = await transporter.sendMail(mailOptions);
+    console.log("✅ Resolved email sent:", info.messageId);
+    res.json({ success: true, message: "Resolved notification sent to user!" });
+  } catch (err) {
+    console.error("❌ Resolved email send failed:", err.message);
+    res.status(500).json({
+      success: false,
+      message: "Mail send failed",
+      error: err.message,
+      code: err.code
+    });
+  }
+});
+
 app.get("/", (req, res) => {
   res.json({
     status: "✅ FixMyArea Backend Running with Brevo",

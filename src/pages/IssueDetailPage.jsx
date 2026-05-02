@@ -4,9 +4,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 import EmailForm from "../components/EmailForm";
+import ResolvedUploadModal from "../components/ResolvedUploadModal";
 import Navbar from "../components/Navbar";
 import { IssueCardSkeleton, ProfileSkeleton } from "../components/Skeleton";
 import { motion, AnimatePresence } from "framer-motion";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 const STATUS_OPTIONS = ["Pending", "Under Review", "Not Important", "Fake", "In Progress", "Resolved", "Rejected"];
 
@@ -29,6 +32,8 @@ export default function IssueDetailPage() {
   const [updating, setUpdating] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [showResolvedModal, setShowResolvedModal] = useState(false);
+  const [resolveSuccess, setResolveSuccess] = useState(false);
 
   useEffect(() => {
     const fetchIssueAndUser = async () => {
@@ -56,6 +61,11 @@ export default function IssueDetailPage() {
   }, [id, navigate]);
 
   const handleStatusUpdate = async (newStatus) => {
+    // If marking as Resolved, show the proof upload modal first
+    if (newStatus === "Resolved") {
+      setShowResolvedModal(true);
+      return;
+    }
     setUpdating(true);
     try {
       await updateDoc(doc(db, "issues", id), { status: newStatus, updatedAt: new Date() });
@@ -63,6 +73,58 @@ export default function IssueDetailPage() {
       alert("Status updated successfully!");
     } catch (err) {
       alert(`Failed to update status: ${err.message}`);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  /* Called after proof image is uploaded from ResolvedUploadModal */
+  const handleResolvedConfirm = async (proofImageUrl) => {
+    setUpdating(true);
+    try {
+      // 1. Update Firestore: status = Resolved + store proof image URL
+      await updateDoc(doc(db, "issues", id), {
+        status: "Resolved",
+        resolvedPhotoURL: proofImageUrl,
+        resolvedAt: new Date(),
+        updatedAt: new Date(),
+      });
+      setIssue((prev) => ({ ...prev, status: "Resolved", resolvedPhotoURL: proofImageUrl }));
+
+      // 2. Send resolved email to the user who reported this issue
+      const userEmail = userData?.email;
+      if (userEmail) {
+        const locationStr =
+          typeof issue.location === "object"
+            ? Object.values(issue.location).filter(Boolean).join(", ")
+            : issue.location || "Not specified";
+
+        try {
+          await fetch(`${API_URL}/api/send-resolved-email`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userEmail,
+              userName: userData?.displayName || userData?.name || "Citizen",
+              issueTitle: issue.title || issue.category,
+              issueDescription: issue.description,
+              issueCategory: issue.category,
+              issueLocation: locationStr,
+              proofImageUrl,
+              issueId: id,
+            }),
+          });
+        } catch (mailErr) {
+          console.error("Resolved email send failed:", mailErr);
+          // Don't block status update if email fails
+        }
+      }
+
+      setShowResolvedModal(false);
+      setResolveSuccess(true);
+      setTimeout(() => setResolveSuccess(false), 4000);
+    } catch (err) {
+      throw new Error(err.message || "Status update fail ho gayi.");
     } finally {
       setUpdating(false);
     }
@@ -273,6 +335,34 @@ export default function IssueDetailPage() {
 
       {/* ── Email Form Modal ── */}
       {showEmailForm && <EmailForm issue={issue} onClose={() => setShowEmailForm(false)} />}
+
+      {/* ── Resolved Proof Upload Modal ── */}
+      {showResolvedModal && (
+        <ResolvedUploadModal
+          issue={issue}
+          onConfirm={handleResolvedConfirm}
+          onClose={() => setShowResolvedModal(false)}
+        />
+      )}
+
+      {/* ── Resolve Success Toast ── */}
+      {resolveSuccess && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-emerald-600 text-white px-6 py-3.5 rounded-2xl shadow-2xl"
+          style={{ animation: "resolvedSlideUp 0.4s cubic-bezier(.22,.68,0,1.2)" }}
+        >
+          <span className="text-xl">✅</span>
+          <div>
+            <p className="font-bold text-sm">Issue Resolved!</p>
+            <p className="text-emerald-100 text-xs">User ko confirmation email bhej diya gaya hai.</p>
+          </div>
+        </div>
+      )}
+      <style>{`
+        @keyframes resolvedSlideUp {
+          from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+          to   { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+      `}</style>
 
       {/* ── Image Lightbox ── */}
       {showImageModal && issue?.photoURL && (
