@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
 import { CheckCircle2, Upload, X, Image, Loader2, AlertCircle } from "lucide-react";
 
-const CLOUDINARY_CLOUD = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-const CLOUDINARY_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+const CLOUDINARY_CLOUD = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "djzx7f5te";
+const CLOUDINARY_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "preset";
 
 export default function ResolvedUploadModal({ issue, onConfirm, onClose }) {
   const [file, setFile] = useState(null);
