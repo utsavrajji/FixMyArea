@@ -40,7 +40,6 @@ function Navbar() {
   };
 
   const isLanding = location.pathname === "/";
-  const hideLinks = ["/dashboard", "/admin", "/admin-dashboard", "/report-issue", "/history", "/login", "/register", "/forgot-password", "/issue"].some(p => location.pathname.startsWith(p));
 
   return (
     <nav
@@ -84,12 +83,18 @@ function Navbar() {
         </Link>
 
           {/* Right Side: Action Buttons */}
-          <div className="flex items-center justify-end gap-6 min-w-[40px] sm:min-w-[120px]">
-          
-          {!user && (
+          <div className="relative z-20 flex items-center justify-end gap-3 sm:gap-6 min-w-[40px] sm:min-w-[120px]">
+          {user ? (
+            <button
+              onClick={() => handleNavigation("/dashboard")}
+              className="rounded-lg bg-white/10 px-2.5 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm font-semibold text-white border border-white/20 shadow-md hover:bg-white/20 transition-all whitespace-nowrap"
+            >
+              Dashboard
+            </button>
+          ) : (
             <button
               onClick={() => handleNavigation("/register")}
-              className="rounded-lg bg-white px-2.5 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm font-semibold text-[#064E3B] shadow-md hover:bg-emerald-50 hover:shadow-lg transition-all"
+              className="rounded-lg bg-white px-2.5 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm font-semibold text-[#064E3B] shadow-md hover:bg-emerald-50 hover:shadow-lg transition-all whitespace-nowrap"
             >
               Get Started
             </button>

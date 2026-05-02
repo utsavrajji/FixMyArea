@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { auth } from "../firebase/config";
+import { onAuthStateChanged } from "firebase/auth";
 
 const CAROUSEL_IMAGES = [
   "/assets/hero/img1.jpg",
@@ -44,6 +46,14 @@ function Counter({ value }) {
 function HeroSection() {
   const navigate = useNavigate();
   const [activeSlide, setActiveSlide] = useState(0);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -117,15 +127,15 @@ function HeroSection() {
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
           className="flex flex-col gap-2 sm:flex-row sm:gap-4"
         >
-          <a
-            href="/login"
+          <button
+            onClick={() => navigate(user ? "/report-issue" : "/register")}
             className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-3.5 py-2 text-[10px] font-bold text-[#064E3B] shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:px-8 sm:py-3.5 sm:text-base"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
             </svg>
-            Report an Issue
-          </a>
+            Get Started
+          </button>
           <button
             onClick={() => navigate("/local-issues")}
             className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/30 bg-white/10 px-3.5 py-2 text-[10px] font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-white/20 sm:px-8 sm:py-3.5 sm:text-base"

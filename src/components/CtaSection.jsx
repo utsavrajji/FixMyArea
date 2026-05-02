@@ -1,7 +1,18 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { auth } from "../firebase/config";
+import { onAuthStateChanged } from "firebase/auth";
 
 function CtaSection() {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
   return (
     <section className="bg-[#064E3B] py-16 sm:py-20">
       <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
@@ -18,10 +29,10 @@ function CtaSection() {
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
           <button
-            onClick={() => navigate("/login")}
+            onClick={() => navigate(user ? "/report-issue" : "/register")}
             className="w-full rounded-xl bg-white px-7 py-3.5 text-sm font-bold text-[#064E3B] shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:w-auto sm:text-base"
           >
-            Report Your First Issue →
+            Get Started Now →
           </button>
           <button
             onClick={() => navigate("/local-issues")}
